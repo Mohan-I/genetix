@@ -1,0 +1,16 @@
+# GEMINI_API_KEY: Required for Gemini AI API calls.
+# AI Studio automatically injects this at runtime from user secrets.
+# Users configure this via the Secrets panel in the AI Studio UI.
+# PASTE YOUR API KEY HERE
+
+VITE_GEMINI_API_KEY=CIyaUyB___[DUMMY_APIKEY]__ivEnOipHa
+
+# APP_URL: The URL where this applet is hosted.
+# AI Studio automatically injects this at runtime with the Cloud Run service URL.
+# Used for self-referential links, OAuth callbacks, and API endpoints.
+
+APP_URL=http://localhost:3000/
+
+# -------------------------------------------------------------------------------------------------------------
+# note : Above given is the structured format for setting up .env file but remember that your save it as `.env` 
+# & file location must be at the same place where tsconfig.json and package.json exists.
