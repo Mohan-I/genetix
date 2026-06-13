@@ -35,3 +35,42 @@
 .custom-scrollbar::-webkit-scrollbar-thumb {
   @apply bg-white/10 rounded-full hover:bg-emerald-500/50 transition-colors;
 }
+
+/* src/index.css - Add these styles */
+.recharts-responsive-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.recharts-wrapper {
+  margin: 0 auto;
+}
+
+.recharts-legend-item-text {
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 9px !important;
+  font-family: monospace !important;
+}
+
+/* CSS for scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f1f1f100;
+  /* Background color of the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(0, 255, 170);
+  /* Color of the scrollbar thumb */
+  border-radius: 4px;
+  /* Rounded corners of the thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(14, 214, 138);
+  /* Color of the thumb on hover */
+}

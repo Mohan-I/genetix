@@ -1,3 +1,4 @@
+// src/types.ts - Ensure types are correct
 export enum BloodType {
   A_POS = 'A+',
   A_NEG = 'A-',
@@ -32,8 +33,8 @@ export enum PathologyStatus {
 
 export interface PathologyRisk {
   label: string;
-  affected: number; // 0-1
-  carrier?: number; // 0-1
+  affected: number;
+  carrier?: number;
   description: string;
 }
 
@@ -41,7 +42,7 @@ export interface MaternalHealthData {
   age: number;
   systolicBP: number;
   diastolicBP: number;
-  glucoseLevel: number; // mg/dL
+  glucoseLevel: number;
 }
 
 export interface ParentProfile {
@@ -51,22 +52,14 @@ export interface ParentProfile {
   hairTexture: HairTexture;
   heightCm: number;
   skinTone: string;
-  // Pathologies
   thalassemia: PathologyStatus;
-  colorBlindness: boolean; 
+  colorBlindness: boolean;
   myopia: boolean;
   diabetesT2: boolean;
-  // Maternal specific health (for Parent A/Alpha)
   maternalHealth?: MaternalHealthData;
 }
 
 export interface TraitProbability {
   label: string;
-  probability: number; // 0 to 1
-}
-
-export interface OffspringPrediction {
-  bloodTypeProbabilities: TraitProbability[];
-  eyeColorProbabilities: TraitProbability[];
-  analysis: string;
+  probability: number;
 }
