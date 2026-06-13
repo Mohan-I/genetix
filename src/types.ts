@@ -1,4 +1,3 @@
-// src/types.ts - Ensure types are correct
 export enum BloodType {
   A_POS = 'A+',
   A_NEG = 'A-',

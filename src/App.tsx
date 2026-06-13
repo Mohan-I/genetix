@@ -1,4 +1,3 @@
-// src/App.tsx - Complete working version with fixed imports
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FlaskConical, RefreshCw, AlertCircle, Thermometer } from 'lucide-react';

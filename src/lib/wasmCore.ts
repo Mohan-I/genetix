@@ -1,4 +1,3 @@
-// src/lib/wasmCore.ts - Fixed with better error handling
 export interface WASMGeneticCore {
   computePolygenicRisk: (variantsPtr: number, weightsPtr: number, length: number) => number;
   monteCarloCross: (p1Ptr: number, p2Ptr: number, geneCount: number, iterations: number, outputPtr: number) => void;

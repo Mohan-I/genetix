@@ -1,4 +1,3 @@
-// src/components/BenchmarkDashboard.tsx
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Cpu, Zap, Database } from 'lucide-react';

@@ -1,4 +1,3 @@
-// src/lib/geneticEngine.ts - Your implementation with fixes
 import { BloodType, EyeColor, TraitProbability, PathologyStatus, PathologyRisk, ParentProfile, MaternalHealthData } from '../types';
 
 /**
