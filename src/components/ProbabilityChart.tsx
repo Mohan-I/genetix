@@ -1,27 +1,23 @@
-// src/components/ProbabilityChart.tsx - With chart type toggle
+// src/components/ProbabilityChart.tsx - Fixed tooltip colors
 import React, { useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { PieChart as PieChartIcon, BarChart as BarChartIcon } from 'lucide-react';
 
 interface ProbabilityChartProps {
   title: string;
-  data: any; // Can be array of TraitProbability or Record<string, number>
+  data: any;
 }
 
-const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
+const COLORS = [ '#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
 
 type ChartType = 'pie' | 'bar';
 
 export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ title, data }) => {
   const [chartType, setChartType] = useState<ChartType>('pie');
   
-  console.log(`Rendering ${title} chart with data:`, data);
-  
-  // Convert data to chart format
   let chartData: Array<{ name: string; value: number }> = [];
   
   if (!data) {
-    console.warn(`No data provided for ${title}`);
     return (
       <div className="p-6 border border-white/10 bg-[#0a0a0c] min-h-[320px]">
         <h3 className="text-[11px] font-mono text-white/40 uppercase tracking-wider mb-4">{title}</h3>
@@ -32,7 +28,6 @@ export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ title, data 
     );
   }
   
-  // Handle array format (TraitProbability[])
   if (Array.isArray(data)) {
     chartData = data
       .filter(item => item.probability > 0.01)
@@ -40,9 +35,7 @@ export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ title, data 
         name: item.label,
         value: item.probability * 100
       }));
-  } 
-  // Handle object format (Record<string, number>)
-  else if (typeof data === 'object') {
+  } else if (typeof data === 'object') {
     chartData = Object.entries(data)
       .filter(([_, value]) => (value as number) > 0.01)
       .map(([key, value]) => ({
@@ -62,8 +55,22 @@ export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ title, data 
     );
   }
   
-  // Sort by value descending for better visualization
   chartData.sort((a, b) => b.value - a.value);
+  
+  // Custom tooltip for better visibility
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-[#0a0a0c] border border-emerald-500/30 rounded-lg px-3 py-2 shadow-xl backdrop-blur-sm">
+          <p className="text-[10px] font-mono text-emerald-400 font-bold mb-1">{payload[0].payload.name}</p>
+          <p className="text-[11px] text-white">
+            Probability: <span className="text-emerald-400 font-bold">{payload[0].value.toFixed(1)}%</span>
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
   
   return (
     <div className="p-6 border border-white/10 bg-[#0a0a0c] min-h-[380px]">
@@ -109,16 +116,7 @@ export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ title, data 
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="#0a0a0c" strokeWidth={2} />
                 ))}
               </Pie>
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#0a0a0c', 
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '4px',
-                  fontSize: '11px',
-                  fontFamily: 'monospace'
-                }}
-                formatter={(value: number) => [`${value.toFixed(1)}%`, 'Probability']}
-              />
+              <Tooltip content={<CustomTooltip />} />
               <Legend 
                 verticalAlign="bottom" 
                 height={46}
@@ -127,7 +125,7 @@ export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ title, data 
                   fontFamily: 'monospace',
                   paddingTop: '10px'
                 }}
-                formatter={(value) => <span className="text-white/60">{value}</span>}
+                formatter={(value) => <span className="text-white/60 hover:text-emerald-400 transition-colors cursor-pointer">{value}</span>}
               />
             </PieChart>
           ) : (
@@ -140,17 +138,8 @@ export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ title, data 
                 tick={{ fill: '#ffffff60', fontSize: 10, fontFamily: 'monospace' }}
                 width={60}
               />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#0a0a0c', 
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '4px',
-                  fontSize: '11px',
-                  fontFamily: 'monospace'
-                }}
-                formatter={(value: number) => [`${value.toFixed(1)}%`, 'Probability']}
-              />
-              <Bar dataKey="value" fill="#10b981" radius={[0, 4, 4, 0]}>
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                 {chartData.map((_, index) => (
                   <Cell key={`bar-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}

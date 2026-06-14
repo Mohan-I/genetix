@@ -23,7 +23,7 @@ export const MaternalHealthInput: React.FC<Props> = ({ data, onChange }) => {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-[10px] font-mono text-white/30 uppercase mb-1.5">Age</label>
+          <label className="block text-[10px] font-mono text-white/30 uppercase mb-1.5">Age (Mother)</label>
           <input 
             type="number"
             value={data.age}
