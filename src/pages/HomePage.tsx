@@ -177,7 +177,7 @@ export const HomePage: React.FC = () => {
       {/* Fixed Navigation - Enhanced */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-[#0a0a0c]/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center space-x-3"
@@ -186,9 +186,9 @@ export const HomePage: React.FC = () => {
               <span className="text-[#0a0a0c] font-bold text-sm">G</span>
             </div>
             <span className="text-sm font-mono text-white/80 tracking-wider">GENETIX</span>
-            <span className="text-[9px] font-mono text-emerald-500/60 bg-emerald-500/10 px-1.5 py-0.5 rounded">v4.2</span>
+            <span className="text-[9px] font-mono text-emerald-500/60 bg-emerald-500/10 px-1.5 py-0.5 hidden md:flex rounded">v4.2</span>
           </motion.div>
-          
+
           <div className="hidden md:flex items-center gap-6">
             <a href="#features" className="text-[11px] font-mono text-white/40 hover:text-white/80 transition-colors">Features</a>
             <a href="#how-it-works" className="text-[11px] font-mono text-white/40 hover:text-white/80 transition-colors">How it Works</a>
@@ -196,7 +196,7 @@ export const HomePage: React.FC = () => {
             <a href="#resources" className="text-[11px] font-mono text-white/40 hover:text-white/80 transition-colors">Resources</a>
           </div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-4"
@@ -235,7 +235,7 @@ export const HomePage: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <motion.div 
+          <motion.div
             style={{ opacity, scale }}
             className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-6"
           >
@@ -243,11 +243,11 @@ export const HomePage: React.FC = () => {
             <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider">Bayesian v4.2 • ML Active</span>
           </motion.div>
 
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-4xl md:text-7xl font-light tracking-tight mb-6"
+            className="text-4xl md:text-6xl font-light tracking-tight mb-6"
           >
             <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
               Genetic Probability
@@ -259,9 +259,8 @@ export const HomePage: React.FC = () => {
           <img
             src={child}
             alt="child"
-            className="mx-auto my-2 max-w-md md:max-w-[12rem] object-contain"
+            className="mx-auto my-2 max-w-[8rem] md:max-w-[12rem] object-contain"
           />
-
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -272,7 +271,7 @@ export const HomePage: React.FC = () => {
             machine learning for probabilistic trait analysis and risk assessment.
           </motion.p>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
@@ -304,7 +303,7 @@ export const HomePage: React.FC = () => {
             { value: "91%", label: "Pregnancy Accuracy", icon: <Activity className="w-4 h-4" />, trend: "+4.1%" },
             { value: "8x", label: "Faster than JS", icon: <Zap className="w-4 h-4" />, trend: "Optimized" }
           ].map((stat, idx) => (
-            <motion.div 
+            <motion.div
               key={idx}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -326,7 +325,7 @@ export const HomePage: React.FC = () => {
 
       {/* Features Section - Enhanced */}
       <section id="features" className="relative z-10 max-w-7xl mx-auto px-6 py-20">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -392,7 +391,7 @@ export const HomePage: React.FC = () => {
                 { step: "03", title: "AI Synthesis", desc: "Gemini 2.0 generates detailed clinical analysis and recommendations.", icon: <Sparkles className="w-4 h-4" /> },
                 { step: "04", title: "Risk Assessment", desc: "Comprehensive pathology scoring and maternal health evaluation.", icon: <Shield className="w-4 h-4" /> }
               ].map((item, idx) => (
-                <motion.div 
+                <motion.div
                   key={idx}
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -493,8 +492,8 @@ export const HomePage: React.FC = () => {
               className="p-6 border border-white/10 bg-white/[0.02] hover:border-emerald-500/30 transition-all"
             >
               <div className="flex items-center gap-3 mb-4">
-                <img 
-                  src={testimonial.image} 
+                <img
+                  src={testimonial.image}
                   alt={testimonial.author}
                   className="w-10 h-10 rounded-full object-cover"
                 />
@@ -580,7 +579,7 @@ export const HomePage: React.FC = () => {
             <Code2 className="w-8 h-8 text-emerald-500 mx-auto mb-4" />
             <h3 className="text-lg font-light text-white/90 mb-2">Open for Contributions</h3>
             <p className="text-[11px] text-white/40 mb-6">
-              Star us on GitHub, report issues, or submit PRs. We welcome all contributions.
+              Star us on GitHub, report issues, or submit PRs. We welcome all contributions. If you like the work don't forget to give a star to this repository on GitHub
             </p>
             <a
               href="https://github.com/mohan-i/genetix"

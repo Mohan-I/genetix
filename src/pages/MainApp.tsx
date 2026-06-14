@@ -96,7 +96,7 @@ export const MainApp: React.FC = () => {
           <div className="flex items-center gap-4">
             <Link 
               to="/" 
-              className="text-white/40 hover:text-white/80 transition-colors p-2 hover:bg-white/5 rounded-sm"
+              className="text-white/40 hover:text-white/80 transition-colors p-2 hover:bg-white/5 rounded-md"
               title="Back to Home"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -106,7 +106,7 @@ export const MainApp: React.FC = () => {
                 G
               </div>
               <div>
-                <h1 className="text-xl font-medium tracking-[0.2em] uppercase">Genetix Probability Engine</h1>
+                <h1 className="text-xl font-medium tracking-[0.2em] hidden md:flex uppercase">Genetix Probability Engine</h1>
                 <p className="text-[10px] text-emerald-500 font-mono">Bayesian v4.2 • Mendelian Inheritance • Polygenic Risk Scoring</p>
               </div>
             </div>
