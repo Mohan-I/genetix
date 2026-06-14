@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "vercel-build": "npm install --legacy-peer-deps && npm run build",
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "vercel-build": "npm install --legacy-peer-deps && npm install react-is && npm run build"
   },
   "dependencies": {
     "@google/genai": "^1.52.0",
@@ -18,15 +18,16 @@
     "@xenova/transformers": "^2.7.0",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
-    "framer-motion": "^12.40.0", 
+    "framer-motion": "^12.40.0",
     "idb": "^8.0.0",
     "lucide-react": "^0.546.0",
     "motion": "^12.23.24",
     "papaparse": "^5.4.1",
-    "react": "^18.2.0",  
-    "react-dom": "^18.2.0",  
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-is": "^19.2.7",
     "react-markdown": "^10.1.0",
-    "recharts": "^3.8.1",
+    "recharts": "^2.12.0",
     "vite": "^6.2.3"
   },
   "devDependencies": {

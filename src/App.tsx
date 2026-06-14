@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import * as ReactIs from 'react-is';
 import { motion, AnimatePresence } from 'motion/react';
 import { FlaskConical, RefreshCw, AlertCircle, Thermometer } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -86,6 +87,8 @@ export default function App() {
     setShowResults(false);
     setAiAnalysis(null);
   };
+
+  window.ReactIs = ReactIs;
 
   return (
     <div className="min-h-screen bg-[#0a0a0c] text-white/90 font-sans">
