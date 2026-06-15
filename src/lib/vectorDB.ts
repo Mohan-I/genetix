@@ -1,4 +1,4 @@
-// src/lib/vectorDB.ts - Chroma-like vector database
+// Chroma-like vector database
 export class VectorDatabase {
   private vectors: Map<string, Float32Array> = new Map();
   private metadata: Map<string, any> = new Map();

@@ -1,4 +1,4 @@
-// scripts/downloadGenomicData.js - Data acquisition pipeline
+// Data acquisition pipeline
 const fs = require('fs');
 const https = require('https');
 

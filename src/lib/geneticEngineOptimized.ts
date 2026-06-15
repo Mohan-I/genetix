@@ -1,4 +1,4 @@
-// src/lib/geneticEngineOptimized.ts - High-performance JS implementation
+// High-performance JS implementation
 export class OptimizedGeneticEngine {
   private static instance: OptimizedGeneticEngine;
   

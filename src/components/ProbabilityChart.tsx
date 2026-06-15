@@ -1,4 +1,3 @@
-// src/components/ProbabilityChart.tsx - Fixed tooltip colors
 import React, { useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { PieChart as PieChartIcon, BarChart as BarChartIcon } from 'lucide-react';

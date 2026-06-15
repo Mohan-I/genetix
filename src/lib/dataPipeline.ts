@@ -1,4 +1,4 @@
-// src/lib/dataPipeline.ts - Dynamic prior extraction from genomic datasets
+// dataPipeline.ts - Dynamic prior extraction from genomic datasets
 import Papa from 'papaparse';
 
 export interface GenomicFrequency {

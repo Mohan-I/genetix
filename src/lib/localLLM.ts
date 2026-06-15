@@ -1,4 +1,4 @@
-// src/lib/localLLM.ts - Local embedding and RAG system
+// Local embedding and RAG system
 import { pipeline, env } from '@xenova/transformers';
 import { VectorDatabase } from './vectorDB';
 

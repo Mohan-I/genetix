@@ -1,4 +1,3 @@
-// src/components/DownloadReport.tsx
 import React, { useState, useRef } from 'react';
 import { Download, FileText, Image, FileJson, ChevronDown, Check } from 'lucide-react';
 import html2canvas from 'html2canvas';

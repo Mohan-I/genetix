@@ -1,4 +1,3 @@
-// src/services/geminiService.ts
 import { GoogleGenAI } from "@google/genai";
 import { ParentProfile } from "../types";
 

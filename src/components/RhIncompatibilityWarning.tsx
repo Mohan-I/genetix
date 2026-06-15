@@ -1,4 +1,3 @@
-// src/components/RhIncompatibilityWarning.tsx
 import React, { useState } from 'react';
 import { AlertTriangle, Syringe, Stethoscope, ChevronDown, ChevronUp, Shield, Clock, Baby } from 'lucide-react';
 
