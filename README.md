@@ -56,8 +56,19 @@ To verify the engine's reactive logic, try the following configurations:
 
 This is an open-source project aimed at making complex genetics accessible. Whether it's optimizing the Bayesian logic or improving the UI, your contributions are welcome!
 
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        GENETIX RESEARCH PAPER                           │
+├────────────────────────┬───────────────────────┬────────────────────────┤
+│     CONTRIBUTION 1     │     CONTRIBUTION 2    │     CONTRIBUTION 3     │
+│  High-Performance Edge │ Deterministic-Bayesian│ Verified Generative AI │
+│   Computing (WASM)     │   Polygenic Modeling  │    Guardrail Layers    │
+└────────────────────────┴───────────────────────┴────────────────────────┘
+```
+
 1.  Fork the Project.
 2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
 3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`).
 4.  Push to the Branch (`git push origin featureNormally I can help with things like this, but I don't seem to have access to that content. You can try again or ask me for something else.
 <p>An Open Source - Feel free to contribute ! - Mohan Yadav</p>
+
