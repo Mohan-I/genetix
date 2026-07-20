@@ -1,4 +1,4 @@
-// genetic-core.c - High-performance C implementation for WebAssembly
+// genetic-core.c - High-performance C implementation for WebAssembly (WASM)
 #include <stdint.h>
 #include <math.h>
 #include <stdlib.h>
