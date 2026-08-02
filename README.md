@@ -8,23 +8,6 @@
 
 Genetix is a sophisticated genetic inheritance prediction platform that combines classical Mendelian genetics with modern machine learning approaches. The application provides a comprehensive suite of tools for analyzing, visualizing, and predicting genetic trait inheritance patterns across generations.
 
-## Run and deploy your App
-
-This contains everything you need to run your app locally - Made with Google AI studio | Mohan Yadav.
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
-
----
-
 ## 🧠 The Core Engine Concepts
 
 The application architecture bifurcates genetic processing into two distinct specialized layers to ensure scientific accuracy and computational efficiency:
@@ -48,6 +31,25 @@ Complex traits like **Height, Skin Tone, and Hair Texture** are influenced by hu
 *   **Visuals:** `recharts` for dynamic probability mapping.
 
 ---
+
+
+## Run and deploy your App
+
+This contains everything you need to run your app locally - Made with Google AI studio | Mohan Yadav.
+
+## Run Locally
+
+**Prerequisites:**  Node.js
+
+
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
+
+---
+
 
 ## 🧪 Feature Validation (Test Cases)
 
@@ -87,5 +89,8 @@ This is an open-source project aimed at making complex genetics accessible. Whet
 3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`).
 4.  Push to the Branch (`git push origin featureNormally I can help with things like this, but I don't seem to have access to that content. You can try again or ask me for something else.
 
+---
 
-<div align="center"> <p><strong>An Open Source Project - Feel Free to Contribute!</strong></p> <p>Made with ❤️ by Mohan Yadav</p> <p> <a href="https://github.com/mohan-i/genetix/issues">Report Bug</a> · <a href="https://github.com/mohan-i/genetix/issues">Request Feature</a> </p> </div>
+<div align="center"> 
+<img width="200" height="200" alt="GHBanner" src="./genetic.gif" />
+<p><strong>An Open Source Project - Feel Free to Contribute!</strong></p> <p>Made with ❤️ by Mohan Yadav</p> <p> <a href="https://github.com/mohan-i/genetix/issues">Report Bug</a> · <a href="https://github.com/mohan-i/genetix/issues">Request Feature</a> </p> </div>
