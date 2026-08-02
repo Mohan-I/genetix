@@ -2,7 +2,13 @@
 <img width="1200" height="475" alt="GHBanner" src="./Genetix_banner.webp" />
 </div>
 
-# Run and deploy your App
+# Genetix - Advanced Genetic Inheritance Engine : Pedigree Logic and Probability Trait Engine.
+
+## 📋 Overview
+
+Genetix is a sophisticated genetic inheritance prediction platform that combines classical Mendelian genetics with modern machine learning approaches. The application provides a comprehensive suite of tools for analyzing, visualizing, and predicting genetic trait inheritance patterns across generations.
+
+## Run and deploy your App
 
 This contains everything you need to run your app locally - Made with Google AI studio | Mohan Yadav.
 
@@ -17,7 +23,7 @@ This contains everything you need to run your app locally - Made with Google AI 
 3. Run the app:
    `npm run dev`
 
-# -----------------------------------------------------------------------------------
+---
 
 ## 🧠 The Core Engine Concepts
 
@@ -52,6 +58,16 @@ To verify the engine's reactive logic, try the following configurations:
 
 ---
 
+## 🧪 Testing & Validation
+
+| Test Scenario | Test Case Configuration | Expected Outcome |
+| :--- | :--- | :--- |
+| **Rh Incompatibility** | Parent Alpha: O-<br>Parent Beta: AB+ | Rh incompatibility alert triggered |
+| **High-Risk Pregnancy** | Maternal Age: 36+<br>Blood Pressure: 145/95 | "HIGH RISK" status with clinical recommendations |
+| **Autosomal Dominant** | Parent: Huntington's positive | 50% inheritance probability calculated |
+| **X-Linked Recessive** | Mother: Carrier<br>Father: Normal | 50% male offspring affected |
+| **Pedigree Export** | Complete family tree | Valid JSON with schema version |
+
 ## 🤝 Contributing
 
 This is an open-source project aimed at making complex genetics accessible. Whether it's optimizing the Bayesian logic or improving the UI, your contributions are welcome!
@@ -70,5 +86,6 @@ This is an open-source project aimed at making complex genetics accessible. Whet
 2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
 3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`).
 4.  Push to the Branch (`git push origin featureNormally I can help with things like this, but I don't seem to have access to that content. You can try again or ask me for something else.
-<p>An Open Source - Feel free to contribute ! - Mohan Yadav</p>
 
+
+<div align="center"> <p><strong>An Open Source Project - Feel Free to Contribute!</strong></p> <p>Made with ❤️ by Mohan Yadav</p> <p> <a href="https://github.com/mohan-i/genetix/issues">Report Bug</a> · <a href="https://github.com/mohan-i/genetix/issues">Request Feature</a> </p> </div>

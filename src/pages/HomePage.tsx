@@ -33,6 +33,7 @@ import {
 
 import child from '../assets/images/child_main.webp';
 import gexpl from '../assets/images/gene_explianed.webp';
+import Header from '../components/Header';
 
 // ScrollToTop component to reset scroll position on route change
 export const ScrollToTop: React.FC = () => {
@@ -173,58 +174,7 @@ export const HomePage: React.FC = () => {
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zMCAzMG0yOSAwYTI5IDI5IDAgMSAxLTU4IDAgMjkgMjkgMCAwIDEgNTggMHoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L2c+PC9zdmc+')] opacity-20" />
       </div>
 
-      {/* Fixed Navigation - Enhanced */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-[#0a0a0c]/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center space-x-3"
-          >
-            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-sm flex items-center justify-center shadow-lg shadow-emerald-500/20">
-              <span className="text-[#0a0a0c] font-bold text-sm">G</span>
-            </div>
-            <span className="text-sm font-mono text-white/80 tracking-wider">GENETIX</span>
-            <span className="text-[9px] font-mono text-emerald-500/60 bg-emerald-500/10 px-1.5 py-0.5 hidden md:flex rounded">v4.2</span>
-          </motion.div>
-
-          <div className="hidden md:flex items-center gap-6">
-            <a href="#features" className="text-[11px] font-mono text-white/40 hover:text-white/80 transition-colors">Features</a>
-            <a href="#how-it-works" className="text-[11px] font-mono text-white/40 hover:text-white/80 transition-colors">How it Works</a>
-            <a href="#testimonials" className="text-[11px] font-mono text-white/40 hover:text-white/80 transition-colors">Research</a>
-            <a href="#resources" className="text-[11px] font-mono text-white/40 hover:text-white/80 transition-colors">Resources</a>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-4"
-          >
-            <a
-              href="https://github.com/mohan-i/genetix"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/40 hover:text-white/80 transition-colors"
-            >
-              <Github className="w-4 h-4" />
-            </a>
-            <a
-              href="https://x.com/Mohan_Yadav_Dev?t=XPV2skK6t93sGaoXmiaT7A&s=09"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/40 hover:text-white/80 transition-colors"
-            >
-              <Twitter className="w-4 h-4" />
-            </a>
-            <Link
-              to="/app"
-              className="px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono rounded hover:bg-emerald-500/20 transition-all hover:shadow-lg hover:shadow-emerald-500/10"
-            >
-              Launch App →
-            </Link>
-          </motion.div>
-        </div>
-      </nav>
+      <Header />
 
       {/* Hero Section - Adjusted padding for fixed header */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-20">

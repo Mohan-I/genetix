@@ -1,12 +1,29 @@
+// src/pages/MainApp.tsx
 import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { FlaskConical, RefreshCw, AlertCircle, Thermometer, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
+import {
+  FlaskConical,
+  RefreshCw,
+  AlertCircle,
+  Thermometer,
+  ArrowLeft,
+  GitBranch,
+  Dna,
+  BarChart3,
+  Users,
+  Activity
+} from 'lucide-react';
 import { ParentProfile, BloodType, EyeColor, HairTexture, PathologyStatus } from '../types';
 import { ParentInput } from '../components/ParentInput';
 import { ProbabilityChart } from '../components/ProbabilityChart';
 import { RhIncompatibilityWarning } from '../components/RhIncompatibilityWarning';
+import { MaternalHealthInput } from '../components/MaternalHealthInput';
+import { DownloadReport } from '../components/DownloadReport';
+import { PedigreeBuilder } from '../components/PedigreeBuilder';
+import { PedigreeData, createDefaultPedigree } from '../types/pedigree';
+import { useSafeStorage } from '../utils/storage';
 import {
   calculateBloodTypeProbabilities,
   calculateEyeColorProbabilities,
@@ -15,8 +32,11 @@ import {
   predictPregnancyRisk
 } from '../lib/geneticEngine';
 import { analyzeGeneticProbability } from '../services/geminiService';
-import { MaternalHealthInput } from '../components/MaternalHealthInput';
-import { DownloadReport } from '../components/DownloadReport';
+import myopia from '../assets/custom_icons/myopia.svg'
+import diabetes from '../assets/custom_icons/diabetes.svg'
+
+
+// ... rest of your MainApp component
 
 const initialParent: ParentProfile = {
   name: '',
@@ -38,12 +58,25 @@ const initialParent: ParentProfile = {
 };
 
 export const MainApp: React.FC = () => {
+  // Tab state
+  const [activeTab, setActiveTab] = useState<'pedigree' | 'analysis'>('analysis');
+  
+  // Parent profiles
   const [p1, setP1] = useState<ParentProfile>({ ...initialParent, name: 'Mother (Alpha)' });
   const [p2, setP2] = useState<ParentProfile>({ ...initialParent, name: 'Father (Beta)' });
+  
+  // Analysis state
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
+  
+  // Pedigree data with safe storage
+  const [pedigreeData, setPedigreeData] = useSafeStorage<PedigreeData>(
+    'pedigree_data',
+    createDefaultPedigree()
+  );
 
+  // Memoized calculations
   const bloodProbabilities = useMemo(() =>
     calculateBloodTypeProbabilities(p1.bloodType, p2.bloodType),
     [p1.bloodType, p2.bloodType]
@@ -69,6 +102,15 @@ export const MainApp: React.FC = () => {
     [p1.maternalHealth]
   );
 
+  // Pedigree statistics
+  const pedigreeStats = {
+    members: pedigreeData.members.length,
+    withMyopia: pedigreeData.members.filter(m => m.myopia).length,
+    withDiabetes: pedigreeData.members.filter(m => m.diabetes).length,
+    probands: pedigreeData.members.filter(m => m.isProband).length
+  };
+
+  // Handlers
   const handleSimulate = async () => {
     setIsAnalyzing(true);
     setShowResults(true);
@@ -88,8 +130,48 @@ export const MainApp: React.FC = () => {
     setAiAnalysis(null);
   };
 
+  const handleSavePedigree = (data: PedigreeData) => {
+    setPedigreeData(data);
+  };
+
+  // Auto-populate from pedigree
+  const autoPopulateFromPedigree = () => {
+    const proband = pedigreeData.members.find(m => m.isProband);
+    if (proband) {
+      // Find parents
+      const parents = pedigreeData.relationships
+        .filter(r => r.type === 'PARENT_CHILD' && r.targetId === proband.id)
+        .map(r => pedigreeData.members.find(m => m.id === r.sourceId))
+        .filter(Boolean);
+      
+      if (parents.length >= 2) {
+        const mother = parents.find(p => p?.gender === 'FEMALE');
+        const father = parents.find(p => p?.gender === 'MALE');
+        
+        if (mother) {
+          setP1({
+            ...p1,
+            name: mother.name || 'Mother',
+            myopia: mother.myopia || false,
+            diabetesT2: mother.diabetes || false
+          });
+        }
+        if (father) {
+          setP2({
+            ...p2,
+            name: father.name || 'Father',
+            myopia: father.myopia || false,
+            diabetesT2: father.diabetes || false
+          });
+        }
+      }
+    }
+    setActiveTab('analysis');
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0a0c] text-white/90 font-sans">
+      {/* Header */}
       <header className="border-b border-white/10 p-6 sticky top-0 bg-[#0a0a0c]/95 backdrop-blur-sm z-10">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
@@ -111,199 +193,302 @@ export const MainApp: React.FC = () => {
             </div>
           </div>
           
-          {/* Add download button here when results are shown */}
-          {showResults && (
-            <DownloadReport
-              bloodProbabilities={bloodProbabilities}
-              eyeProbabilities={eyeProbabilities}
-              pathologyRisks={pathologyRisks}
-              rhRisk={rhRisk}
-              pregnancyRisk={pregnancyRisk}
-              aiAnalysis={aiAnalysis}
-              p1={p1}
-              p2={p2}
-            />
-          )}
+          <div className="flex items-center gap-3">
+            {/* Pedigree Stats Badge */}
+            {activeTab === 'pedigree' && (
+              <span className="text-[12px] text-white/40 font-mono bg-white/5 px-4 py-1.5 rounded flex items-center gap-2">
+                <Users className="w-3 h-3" />
+                {pedigreeStats.members} members
+                {pedigreeStats.withMyopia > 0 && (
+                  <span className="text-blue-400 flex">• <img
+                          src={myopia}
+                          alt="Myopia"
+                          title="Myopia"
+                          className="w-4 h-4 object-contain"
+                        />  {pedigreeStats.withMyopia}</span>
+                )}
+                {pedigreeStats.withDiabetes > 0 && (
+                  <span className="text-red-400 flex">• <img
+                          src={diabetes}
+                          alt="Diabetes"
+                          title="Diabetes"
+                          className="w-4 h-4 object-contain"
+                        /> {pedigreeStats.withDiabetes}</span>
+                )}
+              </span>
+            )}
+            
+            {/* Download Report Button */}
+            {showResults && activeTab === 'analysis' && (
+              <DownloadReport
+                bloodProbabilities={bloodProbabilities}
+                eyeProbabilities={eyeProbabilities}
+                pathologyRisks={pathologyRisks}
+                rhRisk={rhRisk}
+                pregnancyRisk={pregnancyRisk}
+                aiAnalysis={aiAnalysis}
+                p1={p1}
+                p2={p2}
+              />
+            )}
+          </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-12 gap-px bg-white/5">
-          {/* Left Sidebar */}
-          <div className="lg:col-span-3 bg-[#0a0a0c] p-6 space-y-8">
-            <section>
-              <h2 className="text-[10px] text-white/40 uppercase tracking-[0.25em] mb-6 flex items-center justify-between">
-                Parent Phenotypes
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-              </h2>
-              <div className="space-y-6">
-                <ParentInput profile={p1} onChange={setP1} label="Mother (Alpha)" />
-                <MaternalHealthInput
-                  data={p1.maternalHealth!}
-                  onChange={(health) => setP1({ ...p1, maternalHealth: health })}
-                />
-                <ParentInput profile={p2} onChange={setP2} label="Father (Beta)" />
-              </div>
-            </section>
-
+      {/* Tabs */}
+      <div className="border-b border-white/10 bg-[#0a0a0c]/95 backdrop-blur-sm sticky top-[73px] z-10">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex gap-6">
             <button
-              onClick={handleSimulate}
-              disabled={isAnalyzing}
-              className="w-full bg-emerald-500 hover:bg-emerald-400 text-[#0a0a0c] py-4 text-[11px] font-bold uppercase tracking-[0.2em] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              onClick={() => setActiveTab('pedigree')}
+              className={`py-3 px-2 text-[10px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
+                activeTab === 'pedigree'
+                  ? 'border-emerald-500 text-emerald-400'
+                  : 'border-transparent text-white/40 hover:text-white/60'
+              }`}
             >
-              {isAnalyzing ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  ANALYZING...
-                </>
-              ) : (
-                'Synthesize Genome'
-              )}
+              <GitBranch className="w-3 h-3" />
+              Pedigree Builder
+              <span className="text-[8px] bg-white/5 px-1.5 py-0.5 rounded">
+                {pedigreeStats.members}
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab('analysis')}
+              className={`py-3 px-2 text-[10px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
+                activeTab === 'analysis'
+                  ? 'border-emerald-500 text-emerald-400'
+                  : 'border-transparent text-white/40 hover:text-white/60'
+              }`}
+            >
+              <Dna className="w-3 h-3" />
+              Genetic Analysis
             </button>
           </div>
+        </div>
+      </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-9 bg-[#0a0a0c] min-h-[600px]">
-            <AnimatePresence mode="wait">
-              {!showResults ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex flex-col items-center justify-center p-12 text-center min-h-[600px]"
+      {/* Content */}
+      <main className="max-w-7xl mx-auto">
+        <AnimatePresence mode="wait">
+          {/* Pedigree Tab */}
+          {activeTab === 'pedigree' ? (
+            <motion.div
+              key="pedigree"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="p-6"
+            >
+              <PedigreeBuilder
+                data={pedigreeData}
+                onSave={handleSavePedigree}
+                onMemberSelect={(member) => {
+                  console.log('👤 Member selected:', member);
+                }}
+              />
+              
+              {/* Quick Action: Use selected pedigree for analysis */}
+              <div className="mt-4 flex justify-end gap-3">
+                <button
+                  onClick={autoPopulateFromPedigree}
+                  disabled={pedigreeStats.members === 0}
+                  className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono hover:bg-emerald-500/20 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <div className="w-24 h-24 border border-white/10 flex items-center justify-center mb-8 relative">
-                    <div className="absolute inset-0 border border-emerald-500/20 animate-ping"></div>
-                    <FlaskConical className="w-10 h-10 text-emerald-500/40" />
+                  <BarChart3 className="w-3 h-3" />
+                  Run Analysis with Pedigree
+                </button>
+              </div>
+            </motion.div>
+          ) : (
+            /* Analysis Tab */
+            <motion.div
+              key="analysis"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="grid lg:grid-cols-12 gap-px bg-white/5"
+            >
+              {/* Left Sidebar */}
+              <div className="lg:col-span-3 bg-[#0a0a0c] p-6 space-y-8">
+                <section>
+                  <h2 className="text-[10px] text-white/40 uppercase tracking-[0.25em] mb-6 flex items-center justify-between">
+                    Parent Phenotypes
+                    <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                  </h2>
+                  <div className="space-y-6">
+                    <ParentInput profile={p1} onChange={setP1} label="Mother (Alpha)" />
+                    <MaternalHealthInput
+                      data={p1.maternalHealth!}
+                      onChange={(health) => setP1({ ...p1, maternalHealth: health })}
+                    />
+                    <ParentInput profile={p2} onChange={setP2} label="Father (Beta)" />
                   </div>
-                  <h3 className="text-2xl font-light tracking-widest text-white/80 uppercase mb-4">
-                    Configure Parameters
-                  </h3>
-                  <p className="text-white/30 text-sm max-w-sm font-mono">
-                    Select parent phenotypes and click "Synthesize Genome" to begin analysis
-                  </p>
-                </motion.div>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex flex-col"
-                >
-                  {/* Probability Grid */}
-                  <div className="grid md:grid-cols-2 border-b border-white/10">
-                    <ProbabilityChart title="ABO/Rh Blood Distribution" data={bloodProbabilities} />
-                    <div className="border-l border-white/10">
-                      <ProbabilityChart title="Eye Color Distribution" data={eyeProbabilities} />
-                    </div>
-                  </div>
+                </section>
 
-                  {/* Health Analysis */}
-                  <div className="grid md:grid-cols-2 border-b border-white/10">
-                    <div className="p-8 space-y-6">
-                      <h3 className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] flex items-center gap-2">
-                        <AlertCircle className="w-3 h-3 text-red-500" />
-                        Maternal Risk Assessment
-                      </h3>
-                      <div className={`inline-flex px-4 py-2 text-xs font-mono border ${pregnancyRisk.status === 'HIGH'
-                          ? 'bg-red-500/10 border-red-500/30 text-red-500'
-                          : pregnancyRisk.status === 'MODERATE'
-                            ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-500'
-                            : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500'
-                        }`}>
-                        {pregnancyRisk.status} RISK (Score: {pregnancyRisk.riskScore})
+                <button
+                  onClick={handleSimulate}
+                  disabled={isAnalyzing}
+                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-[#0a0a0c] py-4 text-[11px] font-bold uppercase tracking-[0.2em] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      ANALYZING...
+                    </>
+                  ) : (
+                    'Synthesize Genome'
+                  )}
+                </button>
+              </div>
+
+              {/* Main Content */}
+              <div className="lg:col-span-9 bg-[#0a0a0c] min-h-[600px]">
+                <AnimatePresence mode="wait">
+                  {!showResults ? (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="flex flex-col items-center justify-center p-12 text-center min-h-[600px]"
+                    >
+                      <div className="w-24 h-24 border border-white/10 flex items-center justify-center mb-8 relative">
+                        <div className="absolute inset-0 border border-emerald-500/20 animate-ping"></div>
+                        <FlaskConical className="w-10 h-10 text-emerald-500/40" />
                       </div>
-                      <ul className="space-y-2 mt-4">
-                        {pregnancyRisk.notes.map((note, idx) => (
-                          <li key={idx} className="text-[11px] text-white/60 flex gap-2">
-                            <span className="text-emerald-500">→</span> {note}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="p-8 border-l border-white/10">
-                      <h3 className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                        <Thermometer className="w-3 h-3 text-blue-500" />
-                        Blood Group Compatibility
+                      <h3 className="text-2xl font-light tracking-widest text-white/80 uppercase mb-4">
+                        Configure Parameters
                       </h3>
-                      <RhIncompatibilityWarning
-                        isAtRisk={rhRisk.isAtRisk}
-                        message={rhRisk.message}
-                        recommendations={rhRisk.recommendations}
-                        requiresRhoGAM={rhRisk.requiresRhoGAM}
-                      />
-                    </div>
-                  </div>
+                      <p className="text-white/30 text-sm max-w-sm font-mono">
+                        Select parent phenotypes and click "Synthesize Genome" to begin analysis
+                      </p>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex flex-col"
+                    >
+                      {/* Probability Grid */}
+                      <div className="grid md:grid-cols-2 border-b border-white/10">
+                        <ProbabilityChart title="ABO/Rh Blood Distribution" data={bloodProbabilities} />
+                        <div className="border-l border-white/10">
+                          <ProbabilityChart title="Eye Color Distribution" data={eyeProbabilities} />
+                        </div>
+                      </div>
 
-                  {/* Pathology Risks */}
-                  <div className="p-8 border-b border-white/10">
-                    <h2 className="text-[10px] font-bold text-white/40 uppercase tracking-[0.25em] mb-6 flex items-center gap-3">
-                      <span className="w-1 h-3 bg-emerald-500"></span>
-                      Genetic Risk Assessment
-                    </h2>
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {pathologyRisks.map((risk, idx) => (
-                        <div key={idx} className="border border-white/10 p-5 bg-[#0a0a0c] hover:border-emerald-500/30 transition-all">
-                          <div className="flex justify-between items-start mb-3">
-                            <p className="text-[10px] font-mono text-white/60">{risk.label}</p>
-                            <span className="text-[8px] px-2 py-0.5 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                              {risk.carrier !== undefined ? 'Mendelian' : 'Polygenic'}
-                            </span>
+                      {/* Health Analysis */}
+                      <div className="grid md:grid-cols-2 border-b border-white/10">
+                        <div className="p-8 space-y-6">
+                          <h3 className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <AlertCircle className="w-3 h-3 text-red-500" />
+                            Maternal Risk Assessment
+                          </h3>
+                          <div className={`inline-flex px-4 py-2 text-xs font-mono border ${
+                            pregnancyRisk.status === 'HIGH'
+                              ? 'bg-red-500/10 border-red-500/30 text-red-500'
+                              : pregnancyRisk.status === 'MODERATE'
+                                ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-500'
+                                : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500'
+                          }`}>
+                            {pregnancyRisk.status} RISK (Score: {pregnancyRisk.riskScore})
                           </div>
-                          <div className="flex items-baseline gap-2">
-                            <p className="text-3xl font-light text-white">
-                              {(risk.affected * 100).toFixed(1)}<span className="text-xs text-white/30">%</span>
-                            </p>
-                          </div>
-                          {risk.carrier !== undefined && (
-                            <p className="text-[10px] text-emerald-500/60 mt-1">
-                              Carrier risk: {(risk.carrier * 100).toFixed(1)}%
-                            </p>
+                          <ul className="space-y-2 mt-4">
+                            {pregnancyRisk.notes.map((note, idx) => (
+                              <li key={idx} className="text-[11px] text-white/60 flex gap-2">
+                                <span className="text-emerald-500">→</span> {note}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="p-8 border-l border-white/10">
+                          <h3 className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                            <Thermometer className="w-3 h-3 text-blue-500" />
+                            Blood Group Compatibility
+                          </h3>
+                          <RhIncompatibilityWarning
+                            isAtRisk={rhRisk.isAtRisk}
+                            message={rhRisk.message}
+                            recommendations={rhRisk.recommendations}
+                            requiresRhoGAM={rhRisk.requiresRhoGAM}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Pathology Risks */}
+                      <div className="p-8 border-b border-white/10">
+                        <h2 className="text-[10px] font-bold text-white/40 uppercase tracking-[0.25em] mb-6 flex items-center gap-3">
+                          <span className="w-1 h-3 bg-emerald-500"></span>
+                          Genetic Risk Assessment
+                        </h2>
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {pathologyRisks.map((risk, idx) => (
+                            <div key={idx} className="border border-white/10 p-5 bg-[#0a0a0c] hover:border-emerald-500/30 transition-all">
+                              <div className="flex justify-between items-start mb-3">
+                                <p className="text-[10px] font-mono text-white/60">{risk.label}</p>
+                                <span className="text-[8px] px-2 py-0.5 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                                  {risk.carrier !== undefined ? 'Mendelian' : 'Polygenic'}
+                                </span>
+                              </div>
+                              <div className="flex items-baseline gap-2">
+                                <p className="text-3xl font-light text-white">
+                                  {(risk.affected * 100).toFixed(1)}<span className="text-xs text-white/30">%</span>
+                                </p>
+                              </div>
+                              {risk.carrier !== undefined && (
+                                <p className="text-[10px] text-emerald-500/60 mt-1">
+                                  Carrier risk: {(risk.carrier * 100).toFixed(1)}%
+                                </p>
+                              )}
+                              <p className="text-[10px] text-white/30 mt-4 leading-relaxed">
+                                {risk.description}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Analysis Output */}
+                      <div className="p-8">
+                        <div className="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
+                          <h2 className="text-xl font-light text-white/90">Phenotypic Analysis</h2>
+                          <button
+                            onClick={reset}
+                            className="text-[10px] font-mono text-white/20 hover:text-emerald-500 flex items-center gap-2"
+                          >
+                            <RefreshCw className="w-3 h-3" />
+                            Reset
+                          </button>
+                        </div>
+
+                        <div className="prose prose-invert max-w-none prose-sm">
+                          {isAnalyzing ? (
+                            <div className="space-y-4">
+                              <div className="h-4 bg-white/5 w-1/2 animate-pulse rounded"></div>
+                              <div className="h-24 bg-white/5 w-full animate-pulse rounded"></div>
+                              <div className="h-4 bg-white/5 w-2/3 animate-pulse rounded"></div>
+                            </div>
+                          ) : (
+                            <ReactMarkdown>{aiAnalysis || 'Analysis complete. Review the probability distributions above for detailed genetic insights.'}</ReactMarkdown>
                           )}
-                          <p className="text-[10px] text-white/30 mt-4 leading-relaxed">
-                            {risk.description}
+                        </div>
+
+                        <div className="mt-8 p-4 border border-white/5 bg-white/[0.02]">
+                          <p className="text-[10px] text-white/30 font-mono text-center">
+                            ⚠️ Educational simulation only. Based on Mendelian inheritance patterns. Not for clinical use.
                           </p>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Analysis Output */}
-                  <div className="p-8">
-                    <div className="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
-                      <h2 className="text-xl font-light text-white/90">Phenotypic Analysis</h2>
-                      <button
-                        onClick={reset}
-                        className="text-[10px] font-mono text-white/20 hover:text-emerald-500 flex items-center gap-2"
-                      >
-                        <RefreshCw className="w-3 h-3" />
-                        Reset
-                      </button>
-                    </div>
-
-                    <div className="prose prose-invert max-w-none prose-sm">
-                      {isAnalyzing ? (
-                        <div className="space-y-4">
-                          <div className="h-4 bg-white/5 w-1/2 animate-pulse rounded"></div>
-                          <div className="h-24 bg-white/5 w-full animate-pulse rounded"></div>
-                          <div className="h-4 bg-white/5 w-2/3 animate-pulse rounded"></div>
-                        </div>
-                      ) : (
-                        <ReactMarkdown>{aiAnalysis || 'Analysis complete. Review the probability distributions above for detailed genetic insights.'}</ReactMarkdown>
-                      )}
-                    </div>
-
-                    <div className="mt-8 p-4 border border-white/5 bg-white/[0.02]">
-                      <p className="text-[10px] text-white/30 font-mono text-center">
-                        ⚠️ Educational simulation only. Based on Mendelian inheritance patterns. Not for clinical use.
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );
