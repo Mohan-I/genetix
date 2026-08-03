@@ -157,10 +157,14 @@
 
 /* 1. Style the main Select Box */
 select {
-  appearance: base-select; /* Unlocks internal DOM rendering in supported browsers */
-  background-color: #121212; /* Dark background */
-  color: #ffffff;            /* Light text color */
-  border: 1px solid #10b981;  /* Green border matching your screenshot */
+  appearance: base-select;
+  /* Unlocks internal DOM rendering in supported browsers */
+  background-color: #121212;
+  /* Dark background */
+  color: #ffffff;
+  /* Light text color */
+  border: 1px solid #10b981;
+  /* Green border matching your screenshot */
   border-radius: 6px;
   padding: 8px 12px;
   outline: none;
@@ -175,18 +179,22 @@ select {
 
 /* 2. Force Dark Mode Theme on Operating System Popup */
 select {
-  color-scheme: dark; /* Signals Windows/macOS/Chrome to render dark popups */
+  color-scheme: dark;
+  /* Signals Windows/macOS/Chrome to render dark popups */
 }
 
 /* 3. Style individual Option elements */
 select option {
-  background-color: #1a1a1a; /* Dark background for dropdown list */
-  color: #ffffff;            /* White text for options */
+  background-color: #1a1a1a;
+  /* Dark background for dropdown list */
+  color: #ffffff;
+  /* White text for options */
   padding: 10px;
 }
 
 /* 4. Fix for WebKit (Chrome/Edge/Safari) focused states */
 select:focus option:checked {
-  background-color: #03ab76; /* Active/Selected option color */
+  background-color: #03ab76;
+  /* Active/Selected option color */
   color: #ffffff;
 }
