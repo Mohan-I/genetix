@@ -119,6 +119,42 @@
   }
 }
 
+/* src/index.css or src/styles/global.css */
+/* Add for better touch scrolling */
+.pedigree-canvas {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+}
+
+.pedigree-canvas::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.pedigree-canvas::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+}
+
+.pedigree-canvas::-webkit-scrollbar-thumb {
+  background: rgba(74, 222, 128, 0.3);
+  border-radius: 2px;
+}
+
+.pedigree-canvas::-webkit-scrollbar-thumb:hover {
+  background: rgba(74, 222, 128, 0.5);
+}
+
+/* Mobile touch optimization */
+@media (max-width: 768px) {
+  .pedigree-canvas {
+    touch-action: pan-x pan-y !important;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
 /* 1. Style the main Select Box */
 select {
   appearance: base-select; /* Unlocks internal DOM rendering in supported browsers */

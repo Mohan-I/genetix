@@ -38,10 +38,10 @@ import pinkribbon from '../assets/custom_icons/pinkRibbon.svg';
 import violetribbon from '../assets/custom_icons/violetRibbon.svg';
 import Affected from '../assets/custom_icons/affected.svg';
 import Deceased from '../assets/custom_icons/deceased.svg';
-import { 
-  PedigreeData, 
-  PedigreeMember, 
-  PedigreeRelationship, 
+import {
+  PedigreeData,
+  PedigreeMember,
+  PedigreeRelationship,
   createDefaultPedigree,
   PEDIGREE_JSON_MAGIC,
   PEDIGREE_JSON_VERSION
@@ -341,12 +341,12 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
   onDataChange
 }) => {
   // Use the safe storage hook with recovery mechanism
-  const { 
-    data: storageData, 
-    setData: setStorageData, 
+  const {
+    data: storageData,
+    setData: setStorageData,
     resetToDefault,
     validationErrors,
-    isValid 
+    isValid
   } = usePedigreeStorage('pedigree_data');
 
   // Local state with recovery from storage
@@ -1157,31 +1157,35 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
       {/* Canvas */}
       <div
         ref={containerRef}
-        className="w-full h-[400px] md:h-[500px] lg:h-[600px] border border-white/10 bg-[#0a0a0c] relative overflow-hidden"
+        className="w-full h-[400px] md:h-[500px] lg:h-[600px] border border-white/10 bg-[#0a0a0c] relative overflow-auto touch-auto"
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        style={{ touchAction: 'none' }}
+        style={{ touchAction: 'pan-x pan-y' }}
       >
-        {/* Grid */}
-        <div className="absolute inset-0 opacity-5" style={{
+        {/* Grid - Now behind everything */}
+        <div className="absolute inset-0 opacity-5 pointer-events-none" style={{
           backgroundImage: 'radial-gradient(circle, #4ade80 1px, transparent 1px)',
-          backgroundSize: `${40 * zoomLevel}px ${40 * zoomLevel}px`
+          backgroundSize: `${40 * zoomLevel}px ${40 * zoomLevel}px`,
+          zIndex: 0
         }} />
 
-        {/* Canvas Content */}
+        {/* Canvas Content - Wrapped in a scrollable container */}
         <div
-          className="absolute inset-0"
+          className="relative"
           style={{
+            width: `${Math.max(800, pedigreeData.members.length * 120)}px`,
+            height: `${Math.max(600, pedigreeData.members.length * 80)}px`,
             transform: `scale(${zoomLevel})`,
             transformOrigin: '0 0',
+            zIndex: 1
           }}
         >
-          {/* Relationship Lines */}
-          <svg className="absolute inset-0 pointer-events-none w-full h-full">
+          {/* Relationship Lines - Behind members */}
+          <svg className="absolute inset-0 pointer-events-none w-full h-full" style={{ zIndex: 1 }}>
             {pedigreeData.relationships.map(rel => {
               const source = pedigreeData.members.find(m => m.id === rel.sourceId);
               const target = pedigreeData.members.find(m => m.id === rel.targetId);
@@ -1208,12 +1212,20 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
               }
 
               return (
-                <path key={rel.id} d={path} stroke={color} strokeWidth="2" strokeDasharray={dash} opacity="0.6" />
+                <path
+                  key={rel.id}
+                  d={path}
+                  stroke={color}
+                  strokeWidth="2.5"
+                  strokeDasharray={dash}
+                  opacity="0.8"
+                  className="pointer-events-none"
+                />
               );
             })}
           </svg>
 
-          {/* Members */}
+          {/* Members - On top of lines */}
           {pedigreeData.members.map(member => {
             const isSelected = selectedMember?.id === member.id;
             const isParent = getChildren(member.id).length > 0;
@@ -1229,7 +1241,7 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
                   left: member.position.x,
                   top: member.position.y,
                   cursor: 'grab',
-                  zIndex: isSelected ? 10 : 1,
+                  zIndex: isSelected ? 10 : 2,
                   touchAction: 'none'
                 }}
                 className="select-none"
@@ -1252,13 +1264,13 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
                     {renderGenderIcon(member.gender)}
 
                     {/* Trait Icons */}
-                    <div className="absolute -top-2 -right-4 grid grid-rows-4 grid-cols-2 grid-flow-col gap-1 text-xs leading-none">
+                    <div className="absolute -top-2 -right-4 grid grid-rows-4 grid-cols-2 grid-flow-col gap-0.5 text-xs leading-none">
                       {member.myopia && (
                         <img
                           src={myopia}
                           alt="Myopia"
                           title="Myopia"
-                          className="w-4 h-4 object-contain"
+                          className="w-3 h-3 object-contain"
                         />
                       )}
                       {member.diabetes && (
@@ -1266,7 +1278,7 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
                           src={diabetes}
                           alt="Diabetes"
                           title="Diabetes"
-                          className="w-4 h-4 object-contain"
+                          className="w-3 h-3 object-contain"
                         />
                       )}
                       {member.colorBlindness && (
@@ -1274,7 +1286,7 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
                           src={colorBlind}
                           alt="Color Blindness"
                           title="Color Blindness"
-                          className="w-4 h-4 object-contain"
+                          className="w-3 h-3 object-contain"
                         />
                       )}
                       {member.cysticFibrosis && (
@@ -1282,7 +1294,7 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
                           src={cysticFibrosis}
                           alt="Cystic Fibrosis"
                           title="Cystic Fibrosis"
-                          className="w-4 h-4 object-contain"
+                          className="w-3 h-3 object-contain"
                         />
                       )}
                       {member.sickleCell && (
@@ -1290,7 +1302,7 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
                           src={sickleCell}
                           alt="Sickle Cell"
                           title="Sickle Cell"
-                          className="w-4 h-4 object-contain"
+                          className="w-3 h-3 object-contain"
                         />
                       )}
                       {member.huntingtons && (
@@ -1298,7 +1310,7 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
                           src={brain}
                           alt="Huntington's"
                           title="Huntington's"
-                          className="w-4 h-4 object-contain"
+                          className="w-3 h-3 object-contain"
                         />
                       )}
                       {member.brca1 && (
@@ -1306,7 +1318,7 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
                           src={pinkribbon}
                           alt="BRCA1"
                           title="BRCA1"
-                          className="w-4 h-4 object-contain"
+                          className="w-3 h-3 object-contain"
                         />
                       )}
                       {member.brca2 && (
@@ -1314,40 +1326,50 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
                           src={violetribbon}
                           alt="BRCA2"
                           title="BRCA2"
-                          className="w-4 h-4 object-contain"
+                          className="w-3 h-3 object-contain"
                         />
                       )}
                     </div>
 
                     {/* Role Badge */}
                     {isParent && (
-                      <div className="absolute -top-4 left-1/8 -translate-x-1/2 text-[8px] text-emerald-400/60 bg-emerald-500/20 px-1.5 py-0.5 rounded whitespace-nowrap">
+                      <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[7px] text-emerald-400/60 bg-emerald-500/20 px-1.5 py-0.5 rounded whitespace-nowrap">
                         Parent
                       </div>
                     )}
                     {isChild && !isParent && (
-                      <div className="absolute -top-4 left-1/8 -translate-x-1/2 text-[8px] text-blue-400/60 bg-blue-500/20 px-1.5 py-0.5 rounded whitespace-nowrap">
+                      <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[7px] text-blue-400/60 bg-blue-500/20 px-1.5 py-0.5 rounded whitespace-nowrap">
                         Child
                       </div>
                     )}
 
                     {/* Status Indicators */}
-                    <div className="absolute -bottom-1 right-12 flex -translate-x-1/2 gap-0.5">
-                      {member.affected && <div className="w-4 h-4 bg-red/20 rounded-full"><img src={Affected} className='w-8' alt='Affected' /></div>}
-                      {member.carrier && !member.affected && <div className="w-4 h-4 bg-amber-500 rounded-full"></div>}
-                      {member.deceased && <div className="w-4 h-4 bg-white/20 rounded-full"><img src={Deceased} className='w-8' alt='Deceased' /></div>}
+                    <div className="absolute -bottom-1 right-10 flex -translate-x-1/2 gap-0.5">
+                      {member.affected && (
+                        <div className="w-3 h-3 bg-red/20 rounded-full">
+                          <img src={Affected} className='w-full h-full object-contain' alt='Affected' />
+                        </div>
+                      )}
+                      {member.carrier && !member.affected && (
+                        <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                      )}
+                      {member.deceased && (
+                        <div className="w-3 h-3 bg-white/20 rounded-full">
+                          <img src={Deceased} className='w-full h-full object-contain' alt='Deceased' />
+                        </div>
+                      )}
                     </div>
 
-                    <div className='absolute flex -left-4 top-1/4 -translate-y-1/2'>
+                    <div className='absolute flex -left-4 top-1/4 -translate-y-1/2 gap-0.5'>
                       {/* Spouse Indicator */}
                       {spouse && (
                         <div className="text-[8px] text-emerald-400/30">
-                          <img src={Married} className='w-4' alt='Married' />
+                          <img src={Married} className='w-3 h-3' alt='Married' />
                         </div>
                       )}
                       {/* Proband Badge */}
                       {member.isProband && (
-                        <div className="w-4 h-4 bg-amber-400 rounded-full flex items-center justify-center text-[8px] font-bold text-black border border-amber-500 shadow-lg">
+                        <div className="w-4 h-4 bg-amber-400 rounded-full flex items-center justify-center text-[7px] font-bold text-black border border-amber-500 shadow-lg">
                           P
                         </div>
                       )}
@@ -1355,12 +1377,12 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
                   </div>
 
                   {/* Name */}
-                  <div className="absolute -bottom-4 right-8 text-center flex gap-2 mt-2">
-                    <div className="text-[8px] text-white/60 font-mono truncate max-w-[60px]">
+                  <div className="absolute -bottom-5 right-7 text-center flex gap-1 mt-1">
+                    <div className="text-[7px] text-white/60 font-mono truncate max-w-[50px]">
                       {member.name || 'Unknown'}
                     </div>
                     {member.age && (
-                      <div className="text-[8px] text-white/40 bg-slate-500/20 rounded font-mono">{member.age}y</div>
+                      <div className="text-[7px] text-white/40 bg-slate-500/20 rounded px-1 font-mono">{member.age}y</div>
                     )}
                   </div>
                 </div>
