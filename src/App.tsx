@@ -6,6 +6,7 @@ import { MainApp } from './pages/MainApp';
 import { PedigreeBuilderPage } from './pages/PedigreeBuilderPage';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ContactPage } from './pages/ContactPage';
+import { ResourcesPage } from './pages/ResourcesPage';
 import { ExplanationPage } from './pages/InfoPage';
 
 // ============================================================================
@@ -158,6 +159,7 @@ function App() {
               <Route path="/app" element={<MainApp />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/explanation" element={<ExplanationPage />} />
+              <Route path="/resources" element={<ResourcesPage />} />
               <Route path="/pedigree" element={<PedigreeBuilderPage />} />
               <Route path="/analysis" element={<Navigate to="/app" replace />} />
               <Route path="*" element={
