@@ -205,17 +205,17 @@ export const MainApp: React.FC = () => {
                   <p className="text-[10px] text-emerald-500 hidden md:flex font-mono">Bayesian v4.2 • Mendelian Inheritance • Polygenic Risk Scoring</p>
                 </div>
                 {showResults && activeTab === 'analysis' && (
-                <DownloadReport
-                  bloodProbabilities={bloodProbabilities}
-                  eyeProbabilities={eyeProbabilities}
-                  pathologyRisks={pathologyRisks}
-                  rhRisk={rhRisk}
-                  pregnancyRisk={pregnancyRisk}
-                  aiAnalysis={aiAnalysis}
-                  p1={p1}
-                  p2={p2}
-                />
-              )}
+                  <DownloadReport
+                    bloodProbabilities={bloodProbabilities}
+                    eyeProbabilities={eyeProbabilities}
+                    pathologyRisks={pathologyRisks}
+                    rhRisk={rhRisk}
+                    pregnancyRisk={pregnancyRisk}
+                    aiAnalysis={aiAnalysis}
+                    p1={p1}
+                    p2={p2}
+                  />
+                )}
               </div>
             </div>
 
@@ -247,7 +247,7 @@ export const MainApp: React.FC = () => {
                 </span>
               )}
 
-              
+
             </div>
           </div>
         </header>
@@ -259,8 +259,8 @@ export const MainApp: React.FC = () => {
               <button
                 onClick={() => setActiveTab('pedigree')}
                 className={`py-3 px-2 text-[10px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${activeTab === 'pedigree'
-                    ? 'border-emerald-500 text-emerald-400'
-                    : 'border-transparent text-white/40 hover:text-white/60'
+                  ? 'border-emerald-500 text-emerald-400'
+                  : 'border-transparent text-white/40 hover:text-white/60'
                   }`}
               >
                 <GitBranch className="w-3 h-3" />
@@ -272,8 +272,8 @@ export const MainApp: React.FC = () => {
               <button
                 onClick={() => setActiveTab('analysis')}
                 className={`py-3 px-2 text-[10px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${activeTab === 'analysis'
-                    ? 'border-emerald-500 text-emerald-400'
-                    : 'border-transparent text-white/40 hover:text-white/60'
+                  ? 'border-emerald-500 text-emerald-400'
+                  : 'border-transparent text-white/40 hover:text-white/60'
                   }`}
               >
                 <Dna className="w-3 h-3" />
@@ -403,10 +403,10 @@ export const MainApp: React.FC = () => {
                             Maternal Risk Assessment
                           </h3>
                           <div className={`inline-flex px-4 py-2 text-xs font-mono border ${pregnancyRisk.status === 'HIGH'
-                              ? 'bg-red-500/10 border-red-500/30 text-red-500'
-                              : pregnancyRisk.status === 'MODERATE'
-                                ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-500'
-                                : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500'
+                            ? 'bg-red-500/10 border-red-500/30 text-red-500'
+                            : pregnancyRisk.status === 'MODERATE'
+                              ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-500'
+                              : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500'
                             }`}>
                             {pregnancyRisk.status} RISK (Score: {pregnancyRisk.riskScore})
                           </div>
