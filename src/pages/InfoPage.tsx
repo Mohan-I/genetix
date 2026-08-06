@@ -10,7 +10,7 @@ import {
   Calculator, Sigma, FunctionSquare, Database, PieChart,
   Layers, Clock as ClockIcon
 } from 'lucide-react';
-import Header from '../components/Header';
+import { Layout } from '../components/Layout';
 
 // ScrollToTop component
 export const ScrollToTop: React.FC = () => {
@@ -177,8 +177,7 @@ export const ExplanationPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a0c] via-[#0f0f13] to-[#0a0a0c]">
-      <ScrollToTop />
-      <BackToTop />
+      <Layout >
 
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -187,9 +186,6 @@ export const ExplanationPage: React.FC = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zMCAzMG0yOSAwYTI5IDI5IDAgMSAxLTU4IDAgMjkgMjkgMCAwIDEgNTggMHoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L2c+PC9zdmc+')] opacity-20" />
       </div>
-
-      {/* Navigation */}
-      <Header />
 
       {/* Hero */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-16">
@@ -368,24 +364,7 @@ export const ExplanationPage: React.FC = () => {
           </Link>
         </motion.div>
       </section>
-
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-white/10 py-12">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <span className="text-[9px] text-white/20 font-mono">GENETIX v4.2 • MIT License • Built with TypeScript & React</span>
-          <div className="flex gap-4">
-            <a href="https://github.com/mohan-i/genetix" className="text-white/20 hover:text-white/40 transition-colors">
-              <Github className="w-3 h-3" />
-            </a>
-            <a href="https://x.com/Mohan_Yadav_Dev" className="text-white/20 hover:text-white/40 transition-colors">
-              <Twitter className="w-3 h-3" />
-            </a>
-            <a href="mailto:support@genetix.ai" className="text-white/20 hover:text-white/40 transition-colors">
-              <Mail className="w-3 h-3" />
-            </a>
-          </div>
-        </div>
-      </footer>
+      </ Layout >
     </div>
   );
 };

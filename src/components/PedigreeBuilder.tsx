@@ -538,11 +538,21 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
   // ==========================================================================
   // 6. DRAG AND DROP
   // ==========================================================================
+  // NOTE: React attaches touchstart/touchmove listeners as PASSIVE by default,
+  // so calling e.preventDefault() inside those handlers throws
+  // "Unable to preventDefault inside passive event listener invocation"
+  // on every frame. We rely on `touchAction: 'none'` (set on the draggable
+  // node below) to stop the browser from scrolling while dragging instead
+  // of calling preventDefault() from touch handlers.
 
   const handleDragStart = useCallback((e: React.MouseEvent | React.TouchEvent, memberId: string) => {
-    e.preventDefault();
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    const isTouch = 'touches' in e;
+    if (!isTouch) {
+      // Safe to preventDefault on mouse events (non-passive by default)
+      e.preventDefault();
+    }
+    const clientX = isTouch ? e.touches[0].clientX : e.clientX;
+    const clientY = isTouch ? e.touches[0].clientY : e.clientY;
 
     const member = pedigreeData.members.find(m => m.id === memberId);
     if (!member) return;
@@ -588,10 +598,7 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
         updatedAt: new Date().toISOString()
       }
     });
-
-    if ('touches' in e) {
-      e.preventDefault();
-    }
+    // No preventDefault() here for touch events — see note above.
   }, [draggingId, dragOffset, pedigreeData, updateData, zoomLevel]);
 
   const handleDragEnd = useCallback(() => {
@@ -629,9 +636,11 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (draggingId) {
-      e.preventDefault();
       handleDragMove(e);
     }
+    // No preventDefault() here — the passive touchmove listener can't call
+    // it anyway (that's what was spamming the console), and touchAction:
+    // 'none' on the dragged node already stops the page from scrolling.
   }, [draggingId, handleDragMove]);
 
   const handleTouchEnd = useCallback(() => {
@@ -1089,7 +1098,7 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
       )}
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2 p-2 md:p-3 border border-white/10 bg-slate-800 sticky top-28 z-20">
+      <div className="flex flex-wrap items-center gap-2 p-2 md:p-3 border border-white/10 bg-slate-800 sticky top-[104px] md:top-[132px] z-20">
         <div className="flex items-center gap-2">
           <Network className="w-4 h-4 text-emerald-500" />
           <span className="text-[10px] text-white/40 uppercase font-mono hidden xs:inline">Pedigree</span>

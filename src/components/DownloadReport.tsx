@@ -1,5 +1,6 @@
+// src/components/DownloadReport.tsx
 import React, { useState, useRef } from 'react';
-import { Download, FileText, Image, FileJson, ChevronDown, Check } from 'lucide-react';
+import { Download, FileText, Image, FileJson, ChevronDown, Check, X } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -28,7 +29,20 @@ export const DownloadReport: React.FC<DownloadReportProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [exportSuccess, setExportSuccess] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const generateHTMLContent = () => {
     return `
@@ -36,237 +50,288 @@ export const DownloadReport: React.FC<DownloadReportProps> = ({
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Genetix Report - ${new Date().toLocaleString()}</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      background: #282828;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Courier New', monospace;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Courier New', monospace;
       background: linear-gradient(135deg, #0a0a0c 0%, #0f0f13 100%);
-      padding: 40px;
+      padding: 20px;
       color: #e0e0e0;
+      min-height: 100vh;
     }
     .container {
-      max-width: 900px;
+      max-width: 1000px;
       margin: 0 auto;
-      background: rgba(10, 10, 12, 0.95);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      border-radius: 8px;
+      background: #0a0a0c;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 12px;
       overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
     }
     .header {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(20, 184, 166, 0.05) 100%);
-      padding: 30px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(20, 184, 166, 0.06) 100%);
+      padding: 35px 40px 30px;
       text-align: center;
-      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+      border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+      position: relative;
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #10b981, transparent);
+    }
+    .header .logo {
+      display: inline-block;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #10b981, #14b8a6);
+      border-radius: 8px;
+      line-height: 48px;
+      font-size: 24px;
+      font-weight: 700;
+      color: #0a0a0c;
+      margin-bottom: 12px;
     }
     .header h1 {
-      font-size: 28px;
-      letter-spacing: 4px;
+      font-size: 26px;
+      letter-spacing: 6px;
       color: #10b981;
-      margin-bottom: 8px;
+      font-weight: 300;
+      margin-bottom: 6px;
     }
-    .header p {
+    .header .subtitle {
       color: #6b7280;
       font-size: 11px;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
     }
-    .content {
-      padding: 30px;
-    }
-    .section {
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .section h2 {
-      font-size: 16px;
-      color: #10b981;
-      margin-bottom: 15px;
-      letter-spacing: 2px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .section h3 {
-      font-size: 12px;
-      color: #9ca3af;
-      margin: 12px 0 8px 0;
+    .header .timestamp {
+      color: #4b5563;
+      font-size: 10px;
+      margin-top: 10px;
       letter-spacing: 1px;
     }
-    .grid {
+    .content { padding: 35px 40px; }
+    .section {
+      margin-bottom: 32px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .section:last-child { border-bottom: none; margin-bottom: 0; }
+    .section-title {
+      font-size: 14px;
+      color: #10b981;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 400;
+    }
+    .section-title .line {
+      flex: 1;
+      height: 1px;
+      background: rgba(16, 185, 129, 0.2);
+    }
+    .grid-2 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 15px;
-      margin: 15px 0;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
     }
     .card {
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 15px;
-      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 16px 18px;
+      border-radius: 8px;
+      transition: border-color 0.2s;
     }
-    .card h4 {
-      color: #10b981;
-      font-size: 11px;
-      margin-bottom: 8px;
+    .card:hover { border-color: rgba(16, 185, 129, 0.15); }
+    .card-label {
+      color: #9ca3af;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
     }
-    .risk-high {
-      color: #ef4444;
-      background: rgba(239, 68, 68, 0.1);
-      padding: 10px;
-      border-left: 3px solid #ef4444;
+    .card-value {
+      font-size: 20px;
+      font-weight: 300;
+      color: #f3f4f6;
     }
-    .risk-moderate {
-      color: #f59e0b;
-      background: rgba(245, 158, 11, 0.1);
-      padding: 10px;
-      border-left: 3px solid #f59e0b;
-    }
-    .risk-low {
-      color: #10b981;
-      background: rgba(16, 185, 129, 0.1);
-      padding: 10px;
-      border-left: 3px solid #10b981;
+    .card-value .unit {
+      font-size: 12px;
+      color: #6b7280;
+      margin-left: 4px;
     }
     .probability-bar {
-      background: rgba(255, 255, 255, 0.1);
-      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      height: 3px;
       border-radius: 2px;
-      margin: 8px 0;
+      margin-top: 8px;
       overflow: hidden;
     }
     .probability-fill {
-      background: #10b981;
       height: 100%;
       border-radius: 2px;
-      transition: width 0.3s ease;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 10px 0;
-    }
-    th, td {
-      padding: 8px;
-      text-align: left;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      font-size: 11px;
-    }
-    th {
-      color: #10b981;
-      font-weight: normal;
-      letter-spacing: 1px;
-    }
-    .footer {
-      background: rgba(0, 0, 0, 0.3);
-      padding: 20px;
-      text-align: center;
-      font-size: 9px;
-      color: #6b7280;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      transition: width 0.6s ease;
     }
     .badge {
       display: inline-block;
-      padding: 2px 6px;
+      padding: 2px 8px;
       font-size: 8px;
-      border-radius: 3px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
       margin-left: 8px;
-      letter-spacing: 1px;
+      font-weight: 600;
     }
     .badge-mendelian {
-      background: rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.15);
       color: #10b981;
-      border: 1px solid rgba(16, 185, 129, 0.3);
+      border: 1px solid rgba(16, 185, 129, 0.2);
     }
     .badge-polygenic {
-      background: rgba(59, 130, 246, 0.2);
+      background: rgba(59, 130, 246, 0.15);
       color: #3b82f6;
-      border: 1px solid rgba(59, 130, 246, 0.3);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    .risk-box {
+      padding: 14px 18px;
+      border-radius: 8px;
+      border-left: 3px solid;
+    }
+    .risk-high { background: rgba(239, 68, 68, 0.08); border-color: #ef4444; color: #fca5a5; }
+    .risk-moderate { background: rgba(245, 158, 11, 0.08); border-color: #f59e0b; color: #fcd34d; }
+    .risk-low { background: rgba(16, 185, 129, 0.08); border-color: #10b981; color: #6ee7b7; }
+    .risk-box strong { color: #fff; }
+    .risk-box ul { margin-top: 8px; padding-left: 20px; }
+    .risk-box ul li { margin: 4px 0; font-size: 11px; }
+    table { width: 100%; border-collapse: collapse; }
+    td { padding: 4px 0; font-size: 11px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+    td:first-child { color: #9ca3af; width: 40%; }
+    td:last-child { color: #e5e7eb; }
+    .analysis-text {
+      font-size: 11px;
+      line-height: 1.8;
+      color: #d1d5db;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .footer {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 20px 40px;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .footer p {
+      font-size: 9px;
+      color: #4b5563;
+      letter-spacing: 1px;
+    }
+    .footer .brand {
+      color: #10b981;
+      font-weight: 600;
+    }
+    .disclaimer {
+      font-size: 9px;
+      line-height: 1.6;
+      color: #6b7280;
+      padding: 16px 18px;
+      background: rgba(239, 68, 68, 0.04);
+      border: 1px solid rgba(239, 68, 68, 0.1);
+      border-radius: 8px;
+    }
+    @media (max-width: 768px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .content { padding: 20px; }
+      .header { padding: 25px 20px; }
     }
     @media print {
-      body {
-        background: white;
-        padding: 0;
-      }
-      .container {
-        box-shadow: none;
-      }
+      body { background: white; padding: 0; }
+      .container { box-shadow: none; border-radius: 0; }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>GENETIX PROBABILITY ENGINE</h1>
-      <p>Bayesian v4.2 • Mendelian Inheritance • Polygenic Risk Scoring</p>
-      <p style="margin-top: 10px; font-size: 10px;">Generated: ${new Date().toLocaleString()}</p>
+      <div class="logo">G</div>
+      <h1>GENETIX</h1>
+      <div class="subtitle">Probabilistic Inheritance Engine</div>
+      <div class="timestamp">Generated: ${new Date().toLocaleString()}</div>
     </div>
     
     <div class="content">
       <!-- Parent Profiles -->
       <div class="section">
-        <h2>📊 PARENT PROFILES</h2>
-        <div class="grid">
+        <div class="section-title">Parent Profiles <span class="line"></span></div>
+        <div class="grid-2">
           <div class="card">
-            <h4>Mother (Alpha)</h4>
+            <div class="card-label">Mother (Alpha)</div>
             <table>
-              <tr><td>Blood Type:</td><td><strong>${p1.bloodType}</strong></td></tr>
-              <tr><td>Eye Color:</td><td><strong>${p1.eyeColor}</strong></td></tr>
-              <tr><td>Thalassemia:</td><td>${p1.thalassemia}</td></tr>
-              <tr><td>Color Blindness:</td><td>${p1.colorBlindness ? 'Yes' : 'No'}</td></tr>
-              <tr><td>Myopia:</td><td>${p1.myopia ? 'Yes' : 'No'}</td></tr>
-              <tr><td>Diabetes T2:</td><td>${p1.diabetesT2 ? 'Yes' : 'No'}</td></tr>
-              <tr><td>Age:</td><td>${p1.maternalHealth?.age} years</td></tr>
-              <tr><td>BP:</td><td>${p1.maternalHealth?.systolicBP}/${p1.maternalHealth?.diastolicBP}</td></tr>
-              <tr><td>Glucose:</td><td>${p1.maternalHealth?.glucoseLevel} mg/dL</td></tr>
+              <tr><td>Blood Type</td><td><strong>${p1.bloodType}</strong></td></tr>
+              <tr><td>Eye Color</td><td><strong>${p1.eyeColor}</strong></td></tr>
+              <tr><td>Thalassemia</td><td>${p1.thalassemia}</td></tr>
+              <tr><td>Color Blindness</td><td>${p1.colorBlindness ? 'Yes' : 'No'}</td></tr>
+              <tr><td>Myopia</td><td>${p1.myopia ? 'Yes' : 'No'}</td></tr>
+              <tr><td>Diabetes T2</td><td>${p1.diabetesT2 ? 'Yes' : 'No'}</td></tr>
+              <tr><td>Age</td><td>${p1.maternalHealth?.age} years</td></tr>
+              <tr><td>BP</td><td>${p1.maternalHealth?.systolicBP}/${p1.maternalHealth?.diastolicBP}</td></tr>
+              <tr><td>Glucose</td><td>${p1.maternalHealth?.glucoseLevel} mg/dL</td></tr>
             </table>
           </div>
           <div class="card">
-            <h4>Father (Beta)</h4>
+            <div class="card-label">Father (Beta)</div>
             <table>
-              <tr><td>Blood Type:</td><td><strong>${p2.bloodType}</strong></td></tr>
-              <tr><td>Eye Color:</td><td><strong>${p2.eyeColor}</strong></td></tr>
-              <tr><td>Thalassemia:</td><td>${p2.thalassemia}</td></tr>
-              <tr><td>Color Blindness:</td><td>${p2.colorBlindness ? 'Yes' : 'No'}</td></tr>
-              <tr><td>Myopia:</td><td>${p2.myopia ? 'Yes' : 'No'}</td></tr>
-              <tr><td>Diabetes T2:</td><td>${p2.diabetesT2 ? 'Yes' : 'No'}</td></tr>
+              <tr><td>Blood Type</td><td><strong>${p2.bloodType}</strong></td></tr>
+              <tr><td>Eye Color</td><td><strong>${p2.eyeColor}</strong></td></tr>
+              <tr><td>Thalassemia</td><td>${p2.thalassemia}</td></tr>
+              <tr><td>Color Blindness</td><td>${p2.colorBlindness ? 'Yes' : 'No'}</td></tr>
+              <tr><td>Myopia</td><td>${p2.myopia ? 'Yes' : 'No'}</td></tr>
+              <tr><td>Diabetes T2</td><td>${p2.diabetesT2 ? 'Yes' : 'No'}</td></tr>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- Blood Type Distribution -->
+      <!-- Blood Type -->
       <div class="section">
-        <h2>🩸 ABO/RH BLOOD DISTRIBUTION</h2>
-        <div class="grid">
+        <div class="section-title">ABO/Rh Blood Distribution <span class="line"></span></div>
+        <div class="grid-3">
           ${bloodProbabilities.map(p => `
             <div class="card">
-              <h4>${p.label}</h4>
-              <div style="font-size: 24px; font-weight: bold; color: #10b981;">${(p.probability * 100).toFixed(1)}%</div>
-              <div class="probability-bar">
-                <div class="probability-fill" style="width: ${(p.probability * 100)}%"></div>
-              </div>
+              <div class="card-label">${p.label}</div>
+              <div class="card-value">${(p.probability * 100).toFixed(1)}<span class="unit">%</span></div>
+              <div class="probability-bar"><div class="probability-fill" style="width: ${p.probability * 100}%; background: #10b981;"></div></div>
             </div>
           `).join('')}
         </div>
       </div>
 
-      <!-- Eye Color Distribution -->
+      <!-- Eye Color -->
       <div class="section">
-        <h2>👁️ EYE COLOR DISTRIBUTION</h2>
-        <div class="grid">
+        <div class="section-title">Eye Color Distribution <span class="line"></span></div>
+        <div class="grid-3">
           ${eyeProbabilities.map(p => `
             <div class="card">
-              <h4>${p.label}</h4>
-              <div style="font-size: 24px; font-weight: bold; color: #3b82f6;">${(p.probability * 100).toFixed(1)}%</div>
-              <div class="probability-bar">
-                <div class="probability-fill" style="width: ${(p.probability * 100)}%"></div>
-              </div>
+              <div class="card-label">${p.label}</div>
+              <div class="card-value">${(p.probability * 100).toFixed(1)}<span class="unit">%</span></div>
+              <div class="probability-bar"><div class="probability-fill" style="width: ${p.probability * 100}%; background: #3b82f6;"></div></div>
             </div>
           `).join('')}
         </div>
@@ -274,45 +339,45 @@ export const DownloadReport: React.FC<DownloadReportProps> = ({
 
       <!-- Rh Compatibility -->
       <div class="section">
-        <h2>⚠️ BLOOD GROUP COMPATIBILITY</h2>
-        <div class="${rhRisk.isAtRisk ? 'risk-high' : 'risk-low'}">
+        <div class="section-title">Blood Group Compatibility <span class="line"></span></div>
+        <div class="risk-box ${rhRisk.isAtRisk ? 'risk-high' : 'risk-low'}">
           <strong>${rhRisk.isAtRisk ? '⚠️ Rh Incompatibility Detected' : '✓ Rh Compatible'}</strong>
-          <p style="margin-top: 8px; font-size: 11px;">${rhRisk.message}</p>
+          <p style="margin-top: 6px; font-size: 11px;">${rhRisk.message}</p>
           ${rhRisk.isAtRisk && rhRisk.recommendations ? `
             <div style="margin-top: 10px;">
-              <strong>Recommendations:</strong>
-              <ul style="margin-top: 5px; margin-left: 20px;">
-                ${rhRisk.recommendations.map((rec: string) => `<li style="margin: 4px 0;">${rec}</li>`).join('')}
-              </ul>
+              <strong style="font-size: 10px;">Recommendations:</strong>
+              <ul>${rhRisk.recommendations.map((rec: string) => `<li>${rec}</li>`).join('')}</ul>
             </div>
           ` : ''}
         </div>
       </div>
 
-      <!-- Maternal Risk Assessment -->
+      <!-- Maternal Risk -->
       <div class="section">
-        <h2>🤰 MATERNAL RISK ASSESSMENT</h2>
-        <div class="${pregnancyRisk.status === 'HIGH' ? 'risk-high' : pregnancyRisk.status === 'MODERATE' ? 'risk-moderate' : 'risk-low'}">
-          <strong>Status: ${pregnancyRisk.status} RISK (Score: ${pregnancyRisk.riskScore})</strong>
-          <ul style="margin-top: 10px; margin-left: 20px;">
-            ${pregnancyRisk.notes.map((note: string) => `<li style="margin: 4px 0;">${note}</li>`).join('')}
+        <div class="section-title">Maternal Risk Assessment <span class="line"></span></div>
+        <div class="risk-box ${pregnancyRisk.status === 'HIGH' ? 'risk-high' : pregnancyRisk.status === 'MODERATE' ? 'risk-moderate' : 'risk-low'}">
+          <strong>Status: ${pregnancyRisk.status} RISK</strong>
+          <span style="font-size: 11px; margin-left: 10px;">Score: ${pregnancyRisk.riskScore}</span>
+          <ul>
+            ${pregnancyRisk.notes.map((note: string) => `<li>${note}</li>`).join('')}
           </ul>
         </div>
       </div>
 
       <!-- Pathology Risks -->
       <div class="section">
-        <h2>🧬 GENETIC RISK ASSESSMENT</h2>
-        <div class="grid">
+        <div class="section-title">Genetic Risk Assessment <span class="line"></span></div>
+        <div class="grid-3">
           ${pathologyRisks.map(risk => `
             <div class="card">
-              <h4>${risk.label} <span class="badge ${risk.carrier !== undefined ? 'badge-mendelian' : 'badge-polygenic'}">${risk.carrier !== undefined ? 'Mendelian' : 'Polygenic'}</span></h4>
-              <div style="font-size: 32px; font-weight: bold; color: ${risk.affected > 0.3 ? '#ef4444' : risk.affected > 0.15 ? '#f59e0b' : '#10b981'};">${(risk.affected * 100).toFixed(1)}%</div>
-              ${risk.carrier !== undefined ? `<div style="font-size: 11px; margin-top: 5px;">Carrier: ${(risk.carrier * 100).toFixed(1)}%</div>` : ''}
-              <div class="probability-bar" style="margin-top: 8px;">
-                <div class="probability-fill" style="width: ${(risk.affected * 100)}%; background: ${risk.affected > 0.3 ? '#ef4444' : risk.affected > 0.15 ? '#f59e0b' : '#10b981'};"></div>
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span class="card-label">${risk.label}</span>
+                <span class="badge ${risk.carrier !== undefined ? 'badge-mendelian' : 'badge-polygenic'}">${risk.carrier !== undefined ? 'Mendelian' : 'Polygenic'}</span>
               </div>
-              <p style="font-size: 9px; color: #9ca3af; margin-top: 8px;">${risk.description}</p>
+              <div class="card-value" style="color: ${risk.affected > 0.3 ? '#ef4444' : risk.affected > 0.15 ? '#f59e0b' : '#10b981'};">${(risk.affected * 100).toFixed(1)}<span class="unit">%</span></div>
+              ${risk.carrier !== undefined ? `<div style="font-size: 10px; color: #9ca3af; margin-top: 2px;">Carrier: ${(risk.carrier * 100).toFixed(1)}%</div>` : ''}
+              <div class="probability-bar"><div class="probability-fill" style="width: ${risk.affected * 100}%; background: ${risk.affected > 0.3 ? '#ef4444' : risk.affected > 0.15 ? '#f59e0b' : '#10b981'};"></div></div>
+              <div style="font-size: 9px; color: #6b7280; margin-top: 6px;">${risk.description}</div>
             </div>
           `).join('')}
         </div>
@@ -321,28 +386,24 @@ export const DownloadReport: React.FC<DownloadReportProps> = ({
       <!-- AI Analysis -->
       ${aiAnalysis ? `
         <div class="section">
-          <h2>🤖 AI-GENERATED ANALYSIS</h2>
-          <div class="card">
-            <div style="font-size: 11px; line-height: 1.6;">${aiAnalysis.replace(/\n/g, '<br/>')}</div>
-          </div>
+          <div class="section-title">AI-Generated Analysis <span class="line"></span></div>
+          <div class="analysis-text">${aiAnalysis.replace(/\n/g, '<br/>')}</div>
         </div>
       ` : ''}
 
       <!-- Disclaimer -->
-      <div class="section">
-        <h2>⚕️ DISCLAIMER</h2>
-        <div class="card" style="background: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.2);">
-          <p style="font-size: 10px; line-height: 1.5;">
-            This report is generated for educational purposes only. Genetic outcomes are probabilistic and actual results may vary. 
-            Not intended for clinical decision-making. Always consult with qualified healthcare providers for medical advice.
-          </p>
+      <div class="section" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+        <div class="section-title">Disclaimer <span class="line"></span></div>
+        <div class="disclaimer">
+          This report is generated for <strong>educational purposes only</strong>. Genetic outcomes are probabilistic and actual results may vary. 
+          Not intended for clinical decision-making. Always consult with qualified healthcare providers for medical advice.
         </div>
       </div>
     </div>
     
     <div class="footer">
-      <p>GENETIX v4.2 | Bayesian ML | Ethical AI</p>
-      <p style="margin-top: 5px;">© 2024 Genetix Probability Engine - Research & Education Platform</p>
+      <p><span class="brand">GENETIX</span> v4.2 &bull; Bayesian ML &bull; Ethical AI</p>
+      <p style="margin-top: 4px;">© 2024 Genetix Probability Engine &bull; Research &amp; Education Platform</p>
     </div>
   </div>
 </body>
@@ -351,73 +412,80 @@ export const DownloadReport: React.FC<DownloadReportProps> = ({
   };
 
   const generateTXTContent = () => {
-    return `
-GENETIX PROBABILITY ENGINE - COMPREHENSIVE REPORT
-=================================================
-Generated: ${new Date().toLocaleString()}
+    const lines = [
+      '='.repeat(60),
+      'GENETIX PROBABILITY ENGINE - COMPREHENSIVE REPORT',
+      '='.repeat(60),
+      `Generated: ${new Date().toLocaleString()}`,
+      '',
+      'PARENT PROFILES',
+      '-'.repeat(50),
+      '',
+      'Mother (Alpha):',
+      `  Blood Type: ${p1.bloodType}`,
+      `  Eye Color: ${p1.eyeColor}`,
+      `  Thalassemia: ${p1.thalassemia}`,
+      `  Color Blindness: ${p1.colorBlindness ? 'Yes' : 'No'}`,
+      `  Myopia: ${p1.myopia ? 'Yes' : 'No'}`,
+      `  Diabetes T2: ${p1.diabetesT2 ? 'Yes' : 'No'}`,
+      `  Age: ${p1.maternalHealth?.age} years`,
+      `  Blood Pressure: ${p1.maternalHealth?.systolicBP}/${p1.maternalHealth?.diastolicBP}`,
+      `  Glucose: ${p1.maternalHealth?.glucoseLevel} mg/dL`,
+      '',
+      'Father (Beta):',
+      `  Blood Type: ${p2.bloodType}`,
+      `  Eye Color: ${p2.eyeColor}`,
+      `  Thalassemia: ${p2.thalassemia}`,
+      `  Color Blindness: ${p2.colorBlindness ? 'Yes' : 'No'}`,
+      `  Myopia: ${p2.myopia ? 'Yes' : 'No'}`,
+      `  Diabetes T2: ${p2.diabetesT2 ? 'Yes' : 'No'}`,
+      '',
+      'BLOOD TYPE DISTRIBUTION',
+      '-'.repeat(50),
+      ...bloodProbabilities.map(p => `${p.label}: ${(p.probability * 100).toFixed(1)}%`),
+      '',
+      'EYE COLOR DISTRIBUTION',
+      '-'.repeat(50),
+      ...eyeProbabilities.map(p => `${p.label}: ${(p.probability * 100).toFixed(1)}%`),
+      '',
+      'RH COMPATIBILITY',
+      '-'.repeat(50),
+      `Status: ${rhRisk.isAtRisk ? '⚠️ INCOMPATIBLE - Requires RhoGAM' : '✓ Compatible'}`,
+      rhRisk.isAtRisk ? `Message: ${rhRisk.message}` : '',
+      '',
+      'MATERNAL RISK ASSESSMENT',
+      '-'.repeat(50),
+      `Status: ${pregnancyRisk.status} RISK`,
+      `Risk Score: ${pregnancyRisk.riskScore}`,
+      'Notes:',
+      ...pregnancyRisk.notes.map(n => `  - ${n}`),
+      '',
+      'PATHOLOGY RISK ASSESSMENT',
+      '-'.repeat(50),
+      ...pathologyRisks.map(risk => [
+        `${risk.label}:`,
+        `  Affected Risk: ${(risk.affected * 100).toFixed(1)}%`,
+        risk.carrier ? `  Carrier Risk: ${(risk.carrier * 100).toFixed(1)}%` : '',
+        `  Description: ${risk.description}`,
+        ''
+      ]).flat(),
+      'AI-GENERATED ANALYSIS',
+      '-'.repeat(50),
+      aiAnalysis || 'No AI analysis available',
+      '',
+      'DISCLAIMER',
+      '-'.repeat(50),
+      'This report is generated for educational purposes only.',
+      'Genetic outcomes are probabilistic and actual results may vary.',
+      'Not intended for clinical decision-making.',
+      '',
+      '='.repeat(60),
+      'Genetix Probability Engine v4.2 | Bayesian ML | Ethical AI',
+      '© 2024 Genetix - Research & Education Platform',
+      '='.repeat(60)
+    ];
 
-PARENT PROFILES
----------------
-Mother (Alpha):
-- Blood Type: ${p1.bloodType}
-- Eye Color: ${p1.eyeColor}
-- Thalassemia: ${p1.thalassemia}
-- Color Blindness: ${p1.colorBlindness ? 'Yes' : 'No'}
-- Myopia: ${p1.myopia ? 'Yes' : 'No'}
-- Diabetes T2: ${p1.diabetesT2 ? 'Yes' : 'No'}
-- Age: ${p1.maternalHealth?.age}
-- Blood Pressure: ${p1.maternalHealth?.systolicBP}/${p1.maternalHealth?.diastolicBP}
-- Glucose: ${p1.maternalHealth?.glucoseLevel} mg/dL
-
-Father (Beta):
-- Blood Type: ${p2.bloodType}
-- Eye Color: ${p2.eyeColor}
-- Thalassemia: ${p2.thalassemia}
-- Color Blindness: ${p2.colorBlindness ? 'Yes' : 'No'}
-- Myopia: ${p2.myopia ? 'Yes' : 'No'}
-- Diabetes T2: ${p2.diabetesT2 ? 'Yes' : 'No'}
-
-BLOOD TYPE DISTRIBUTION
------------------------
-${bloodProbabilities.map(p => `${p.label}: ${(p.probability * 100).toFixed(1)}%`).join('\n')}
-
-EYE COLOR DISTRIBUTION
-----------------------
-${eyeProbabilities.map(p => `${p.label}: ${(p.probability * 100).toFixed(1)}%`).join('\n')}
-
-RH COMPATIBILITY
-----------------
-Status: ${rhRisk.isAtRisk ? '⚠️ INCOMPATIBLE - Requires RhoGAM' : '✓ Compatible'}
-${rhRisk.isAtRisk ? `Message: ${rhRisk.message}` : ''}
-
-MATERNAL RISK ASSESSMENT
-------------------------
-Status: ${pregnancyRisk.status} RISK
-Risk Score: ${pregnancyRisk.riskScore}
-Notes:
-${pregnancyRisk.notes.map(n => `- ${n}`).join('\n')}
-
-PATHOLOGY RISK ASSESSMENT
--------------------------
-${pathologyRisks.map(risk => `
-${risk.label}:
-- Affected Risk: ${(risk.affected * 100).toFixed(1)}%
-${risk.carrier ? `- Carrier Risk: ${(risk.carrier * 100).toFixed(1)}%\n` : ''}- Description: ${risk.description}
-`).join('\n')}
-
-AI-GENERATED ANALYSIS
----------------------
-${aiAnalysis || 'No AI analysis available'}
-
-DISCLAIMER
-----------
-This report is generated for educational purposes only. 
-Genetic outcomes are probabilistic and actual results may vary.
-Not intended for clinical decision-making.
-
----
-Genetix Probability Engine v4.2 | Bayesian ML | Ethical AI
-    `;
+    return lines.join('\n');
   };
 
   const generateJSONContent = () => {
@@ -461,7 +529,7 @@ Genetix Probability Engine v4.2 | Bayesian ML | Ethical AI
 
   const exportAsTXT = () => {
     const content = generateTXTContent();
-    const blob = new Blob([content], { type: 'text/plain' });
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -470,63 +538,38 @@ Genetix Probability Engine v4.2 | Bayesian ML | Ethical AI
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    setExportSuccess(true);
+    setTimeout(() => setExportSuccess(false), 3000);
+    setIsOpen(false);
   };
 
   const exportAsPDF = async () => {
     setIsExporting(true);
     try {
       const htmlContent = generateHTMLContent();
-      const win = window.open();
+      const win = window.open('', '_blank', 'width=1100,height=800,scrollbars=yes');
       if (win) {
         win.document.write(htmlContent);
         win.document.close();
-        win.print();
+        win.onload = () => {
+          setTimeout(() => {
+            win.print();
+            setIsExporting(false);
+            setIsOpen(false);
+            setExportSuccess(true);
+            setTimeout(() => setExportSuccess(false), 3000);
+          }, 500);
+        };
       }
-    } finally {
-      setIsExporting(false);
-    }
-    setIsOpen(false);
-  };
-
-  const exportAsPNG = async () => {
-    setIsExporting(true);
-    try {
-      const htmlContent = generateHTMLContent();
-      const iframe = document.createElement('iframe');
-      iframe.style.position = 'absolute';
-      iframe.style.width = '0';
-      iframe.style.height = '0';
-      iframe.style.border = 'none';
-      document.body.appendChild(iframe);
-      
-      iframe.contentWindow?.document.write(htmlContent);
-      iframe.contentWindow?.document.close();
-      
-      setTimeout(async () => {
-        const canvas = await html2canvas(iframe.contentDocument!.body, {
-          scale: 2,
-          backgroundColor: '#0a0a0c',
-          logging: false
-        });
-        
-        const link = document.createElement('a');
-        link.download = `genetix_report_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.png`;
-        link.href = canvas.toDataURL();
-        link.click();
-        
-        document.body.removeChild(iframe);
-        setIsExporting(false);
-      }, 500);
     } catch (error) {
-      console.error('PNG export failed:', error);
+      console.error('PDF export failed:', error);
       setIsExporting(false);
     }
-    setIsOpen(false);
   };
 
   const exportAsJSON = () => {
     const content = generateJSONContent();
-    const blob = new Blob([content], { type: 'application/json' });
+    const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -535,6 +578,8 @@ Genetix Probability Engine v4.2 | Bayesian ML | Ethical AI
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    setExportSuccess(true);
+    setTimeout(() => setExportSuccess(false), 3000);
     setIsOpen(false);
   };
 
@@ -546,9 +591,6 @@ Genetix Probability Engine v4.2 | Bayesian ML | Ethical AI
       case 'pdf':
         exportAsPDF();
         break;
-      case 'png':
-        exportAsPNG();
-        break;
       case 'json':
         exportAsJSON();
         break;
@@ -556,62 +598,57 @@ Genetix Probability Engine v4.2 | Bayesian ML | Ethical AI
   };
 
   return (
-    <div className="relative">
+    <div className="relative inline-block" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={isExporting}
-        className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 text-emerald-400 hover:text-emerald-300 text-[10px] font-mono uppercase tracking-wider transition-all rounded-sm disabled:opacity-50"
+        className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 text-emerald-400 hover:text-emerald-300 text-[9px] sm:text-[10px] font-mono uppercase tracking-wider transition-all rounded-sm disabled:opacity-50 whitespace-nowrap"
       >
         {isExporting ? (
           <>
-            <div className="w-3 h-3 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
-            Exporting...
+            <div className="w-3 h-3 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+            <span className="hidden xs:inline">Exporting...</span>
+          </>
+        ) : exportSuccess ? (
+          <>
+            <Check className="w-3.5 h-3.5 flex-shrink-0" />
+            <span className="hidden xs:inline">Done!</span>
           </>
         ) : (
           <>
-            <Download className="w-3.5 h-3.5" />
-            Export Report
-            <ChevronDown className="w-3 h-3 ml-1" />
+            <Download className="w-3.5 h-3.5 flex-shrink-0" />
+            <span className="hidden xs:inline">Export</span>
+            <ChevronDown className={`w-3 h-3 transition-transform duration-200 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
           </>
         )}
       </button>
 
       {isOpen && !isExporting && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 mt-2 w-48 bg-[#0a0a0c] border border-white/10 rounded-sm shadow-xl z-50 overflow-hidden">
-            <div className="py-1">
-              <button
-                onClick={() => handleExport('pdf')}
-                className="w-full px-4 py-2 text-left text-[11px] text-white/70 hover:bg-emerald-500/10 hover:text-emerald-400 transition-colors flex items-center gap-2"
-              >
-                <FileText className="w-3.5 h-3.5" />
-                Export as PDF
-              </button>
-              {/* <button
-                onClick={() => handleExport('png')}
-                className="w-full px-4 py-2 text-left text-[11px] text-white/70 hover:bg-emerald-500/10 hover:text-emerald-400 transition-colors flex items-center gap-2"
-              >
-                <Image className="w-3.5 h-3.5" />
-                Export as PNG
-              </button> */}
-              <button
-                onClick={() => handleExport('txt')}
-                className="w-full px-4 py-2 text-left text-[11px] text-white/70 hover:bg-emerald-500/10 hover:text-emerald-400 transition-colors flex items-center gap-2"
-              >
-                <FileText className="w-3.5 h-3.5" />
-                Export as TXT
-              </button>
-              <button
-                onClick={() => handleExport('json')}
-                className="w-full px-4 py-2 text-left text-[11px] text-white/70 hover:bg-emerald-500/10 hover:text-emerald-400 transition-colors flex items-center gap-2 border-t border-white/5"
-              >
-                <FileJson className="w-3.5 h-3.5" />
-                Export as JSON
-              </button>
-            </div>
+        <div className="absolute right-0 mt-1.5 min-w-[160px] sm:min-w-[180px] bg-[#0a0a0c] border border-white/10 rounded-md shadow-2xl z-50 overflow-hidden">
+          <div className="py-1">
+            <button
+              onClick={() => handleExport('pdf')}
+              className="w-full px-3 sm:px-4 py-2 text-left text-[10px] sm:text-[11px] text-white/70 hover:bg-emerald-500/10 hover:text-emerald-400 transition-colors flex items-center gap-2"
+            >
+              <FileText className="w-3.5 h-3.5 flex-shrink-0" />
+              Export as PDF
+            </button>
+            <button
+              onClick={() => handleExport('txt')}
+              className="w-full px-3 sm:px-4 py-2 text-left text-[10px] sm:text-[11px] text-white/70 hover:bg-emerald-500/10 hover:text-emerald-400 transition-colors flex items-center gap-2"
+            >
+              <FileText className="w-3.5 h-3.5 flex-shrink-0" />
+              Export as TXT
+            </button>
+            <button
+              onClick={() => handleExport('json')}
+              className="w-full px-3 sm:px-4 py-2 text-left text-[10px] sm:text-[11px] text-white/70 hover:bg-emerald-500/10 hover:text-emerald-400 transition-colors flex items-center gap-2 border-t border-white/5"
+            >
+              <FileJson className="w-3.5 h-3.5 flex-shrink-0" />
+              Export as JSON
+            </button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

@@ -8,6 +8,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { ContactPage } from './pages/ContactPage';
 import { ResourcesPage } from './pages/ResourcesPage';
 import { ExplanationPage } from './pages/InfoPage';
+import ComingSoonPage from './pages/ComingSoonPage';
 
 // ============================================================================
 // 1. SCROLL TO TOP - ENHANCED VERSION
@@ -161,6 +162,7 @@ function App() {
               <Route path="/explanation" element={<ExplanationPage />} />
               <Route path="/resources" element={<ResourcesPage />} />
               <Route path="/pedigree" element={<PedigreeBuilderPage />} />
+              <Route path="/coming_soon" element={<ComingSoonPage />} />
               <Route path="/analysis" element={<Navigate to="/app" replace />} />
               <Route path="*" element={
                 <div className="min-h-screen bg-[#0a0a0c] flex items-center justify-center">

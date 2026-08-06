@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+// ============================================================
+// Updated HomePage.tsx (with imported components)
+// ============================================================
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import {
   Dna,
@@ -9,72 +12,23 @@ import {
   BarChart3,
   Syringe,
   ArrowRight,
-  Github,
-  Twitter,
-  Mail,
   Sparkles,
   Cpu,
   Database,
   Lock,
   Zap,
-  ChevronUp,
   Microscope,
-  Heart,
-  TrendingUp,
-  Award,
-  Clock,
   Users,
   BookOpen,
   Globe,
   Code2,
-  Server,
-  Layers
+  Layers,
+  Star,
+  Github,
 } from 'lucide-react';
-
 import child from '../assets/images/child_main.webp';
 import gexpl from '../assets/images/gene_explianed.webp';
-import Header from '../components/Header';
-
-// ScrollToTop component to reset scroll position on route change
-export const ScrollToTop: React.FC = () => {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-  return null;
-};
-
-// BackToTop button component
-const BackToTop: React.FC = () => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const toggleVisibility = () => {
-      setIsVisible(window.scrollY > 500);
-    };
-    window.addEventListener('scroll', toggleVisibility);
-    return () => window.removeEventListener('scroll', toggleVisibility);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  return (
-    <motion.button
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0.8 }}
-      transition={{ duration: 0.2 }}
-      onClick={scrollToTop}
-      className="fixed bottom-8 right-8 z-50 p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-full backdrop-blur-sm cursor-pointer hover:bg-emerald-500/30 transition-all group"
-      aria-label="Back to top"
-    >
-      <ChevronUp className="w-5 h-5 text-emerald-400 group-hover:-translate-y-0.5 transition-transform" />
-    </motion.button>
-  );
-};
+import { Layout } from '../components/Layout';
 
 export const HomePage: React.FC = () => {
   const { scrollYProgress } = useScroll();
@@ -86,38 +40,38 @@ export const HomePage: React.FC = () => {
       icon: <Dna className="w-5 h-5" />,
       title: "Mendelian Inheritance",
       description: "Blood type and eye color predictions using classical genetic models with 99.8% confidence intervals.",
-      gradient: "from-emerald-500/20 to-emerald-500/5"
+      gradient: "from-emerald-500/20 to-emerald-500/5",
     },
     {
       icon: <Brain className="w-5 h-5" />,
       title: "AI-Powered Analysis",
       description: "Gemini 2.0 integration provides detailed phenotypic synthesis and clinical recommendations.",
-      gradient: "from-purple-500/20 to-purple-500/5"
+      gradient: "from-purple-500/20 to-purple-500/5",
     },
     {
       icon: <Shield className="w-5 h-5" />,
       title: "Risk Assessment",
       description: "Polygenic risk scoring for diabetes, myopia, and X-linked disorders with carrier probability.",
-      gradient: "from-blue-500/20 to-blue-500/5"
+      gradient: "from-blue-500/20 to-blue-500/5",
     },
     {
       icon: <Activity className="w-5 h-5" />,
       title: "Maternal Health",
       description: "91% accurate pregnancy risk prediction based on age, BP, and glucose levels.",
-      gradient: "from-rose-500/20 to-rose-500/5"
+      gradient: "from-rose-500/20 to-rose-500/5",
     },
     {
       icon: <BarChart3 className="w-5 h-5" />,
       title: "Interactive Visualizations",
       description: "Toggle between pie and bar charts for probability distributions with real-time updates.",
-      gradient: "from-amber-500/20 to-amber-500/5"
+      gradient: "from-amber-500/20 to-amber-500/5",
     },
     {
       icon: <Syringe className="w-5 h-5" />,
       title: "Rh Incompatibility",
       description: "Critical medical protocol for Rh-negative mothers with RhoGAM recommendations.",
-      gradient: "from-cyan-500/20 to-cyan-500/5"
-    }
+      gradient: "from-cyan-500/20 to-cyan-500/5",
+    },
   ];
 
   const techStack = [
@@ -128,55 +82,48 @@ export const HomePage: React.FC = () => {
     { name: "TailwindCSS", icon: <Cpu className="w-3 h-3" />, color: "text-teal-400", desc: "Utility-first" },
     { name: "Bayesian Logic", icon: <Dna className="w-3 h-3" />, color: "text-amber-400", desc: "Statistical" },
     { name: "Framer Motion", icon: <Sparkles className="w-3 h-3" />, color: "text-pink-400", desc: "Animations" },
-    { name: "Vite", icon: <Server className="w-3 h-3" />, color: "text-yellow-400", desc: "Build Tool" }
+    { name: "Vite", icon: <Cpu className="w-3 h-3" />, color: "text-yellow-400", desc: "Build Tool" },
   ];
 
   const testimonials = [
     {
-      quote: "The Bayesian inference engine is remarkably accurate. We've validated results against clinical datasets with impressive consistency.",
+      quote:
+        "The Bayesian inference engine is remarkably accurate. We've validated results against clinical datasets with impressive consistency.",
       author: "Dr. Sarah Chen",
       role: "Clinical Geneticist, Stanford Medicine",
-      image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=100&h=100&fit=crop"
+      image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=100&h=100&fit=crop",
     },
     {
-      quote: "As an educator, this platform has revolutionized how I teach inheritance patterns. Students grasp complex concepts instantly.",
+      quote:
+        "As an educator, this platform has revolutionized how I teach inheritance patterns. Students grasp complex concepts instantly.",
       author: "Prof. James Wilson",
       role: "Molecular Biology, MIT",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop"
+      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
     },
     {
-      quote: "The AI synthesis provides actionable insights that complement our clinical workflow perfectly. A game-changer for genetic counseling.",
+      quote:
+        "The AI synthesis provides actionable insights that complement our clinical workflow perfectly. A game-changer for genetic counseling.",
       author: "Dr. Maya Patel",
       role: "Genetic Counselor, Mayo Clinic",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop"
-    }
+      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop",
+    },
   ];
 
   const resources = [
-    { title: "Documentation", icon: <BookOpen className="w-4 h-4" />, href: "#", description: "Comprehensive API guides" },
-    { title: "Research Paper", icon: <Microscope className="w-4 h-4" />, href: "#", description: "Peer-reviewed methodology" },
-    { title: "GitHub", icon: <Github className="w-4 h-4" />, href: "#", description: "Open source contribution" },
-    { title: "Community", icon: <Users className="w-4 h-4" />, href: "#", description: "Join our Discord" }
+    { title: "Documentation", icon: <BookOpen className="w-4 h-4" />, href: "/resources", description: "Comprehensive API guides" },
+    { title: "Research Paper", icon: <Microscope className="w-4 h-4" />, href: "/resources", description: "Peer-reviewed methodology" },
+    {
+      title: "GitHub",
+      icon: <Github className="w-4 h-4" />,
+      href: "https://github.com/mohan-i/genetix",
+      description: "Open source contribution",
+    },
+    { title: "Community", icon: <Users className="w-4 h-4" />, href: "#", description: "Join our Discord" },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0c] via-[#0f0f13] to-[#0a0a0c]">
-      <ScrollToTop />
-      <BackToTop />
-
-      {/* Animated Background - Enhanced */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl animate-pulse delay-2000" />
-        {/* Grid overlay */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zMCAzMG0yOSAwYTI5IDI5IDAgMSAxLTU4IDAgMjkgMjkgMCAwIDEgNTggMHoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L2c+PC9zdmc+')] opacity-20" />
-      </div>
-
-      <Header />
-
-      {/* Hero Section - Adjusted padding for fixed header */}
+    <Layout>
+      {/* Hero Section */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -189,7 +136,9 @@ export const HomePage: React.FC = () => {
             className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-6"
           >
             <Sparkles className="w-3 h-3 text-emerald-500" />
-            <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider">Bayesian v4.2 • ML Active</span>
+            <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider">
+              Bayesian v4.2 • ML Active
+            </span>
           </motion.div>
 
           <motion.h1
@@ -243,14 +192,14 @@ export const HomePage: React.FC = () => {
         </motion.div>
       </section>
 
-      {/* Stats Section - Enhanced with animations */}
+      {/* Stats Section */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5 rounded-lg overflow-hidden">
           {[
             { value: "99.8%", label: "ML Confidence", icon: <Brain className="w-4 h-4" />, trend: "+2.3%" },
             { value: "1.2M", label: "Genomes Analyzed", icon: <Database className="w-4 h-4" />, trend: "+150k" },
             { value: "91%", label: "Pregnancy Accuracy", icon: <Activity className="w-4 h-4" />, trend: "+4.1%" },
-            { value: "8x", label: "Faster than JS", icon: <Zap className="w-4 h-4" />, trend: "Optimized" }
+            { value: "8x", label: "Faster than JS", icon: <Zap className="w-4 h-4" />, trend: "Optimized" },
           ].map((stat, idx) => (
             <motion.div
               key={idx}
@@ -272,7 +221,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Features Section - Enhanced */}
+      {/* Features Section */}
       <section id="features" className="relative z-10 max-w-7xl mx-auto px-6 py-20">
         <motion.div
           initial={{ opacity: 0 }}
@@ -300,7 +249,9 @@ export const HomePage: React.FC = () => {
               viewport={{ once: true }}
               className="group p-6 border border-white/10 bg-white/[0.02] hover:border-emerald-500/30 transition-all relative overflow-hidden"
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity`} />
+              <div
+                className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity`}
+              />
               <div className="w-10 h-10 bg-emerald-500/10 rounded-sm flex items-center justify-center mb-4 group-hover:bg-emerald-500/20 transition-colors relative z-10">
                 <div className="text-emerald-500">{feature.icon}</div>
               </div>
@@ -315,7 +266,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* How It Works - Enhanced with visual timeline */}
+      {/* How It Works */}
       <section id="how-it-works" className="relative z-10 max-w-7xl mx-auto px-6 py-20 border-t border-white/5">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <motion.div
@@ -338,7 +289,7 @@ export const HomePage: React.FC = () => {
                 { step: "01", title: "Input Phenotypes", desc: "Select blood types, eye colors, and genetic conditions for both parents.", icon: <Dna className="w-4 h-4" /> },
                 { step: "02", title: "Bayesian Inference", desc: "Engine calculates probability distributions using validated genetic models.", icon: <Brain className="w-4 h-4" /> },
                 { step: "03", title: "AI Synthesis", desc: "Gemini 2.0 generates detailed clinical analysis and recommendations.", icon: <Sparkles className="w-4 h-4" /> },
-                { step: "04", title: "Risk Assessment", desc: "Comprehensive pathology scoring and maternal health evaluation.", icon: <Shield className="w-4 h-4" /> }
+                { step: "04", title: "Risk Assessment", desc: "Comprehensive pathology scoring and maternal health evaluation.", icon: <Shield className="w-4 h-4" /> },
               ].map((item, idx) => (
                 <motion.div
                   key={idx}
@@ -378,7 +329,7 @@ export const HomePage: React.FC = () => {
                 "Educational simulation only — Not for clinical diagnosis",
                 "HIPAA-compliant data handling (no PII stored)",
                 "Transparent Bayesian models with explainable outputs",
-                "Regular audits for bias and accuracy validation"
+                "Regular audits for bias and accuracy validation",
               ].map((item, idx) => (
                 <p key={idx} className="text-[11px] text-white/60 leading-relaxed flex items-start gap-2">
                   <span className="text-emerald-500 mt-0.5">→</span> {item}
@@ -397,7 +348,9 @@ export const HomePage: React.FC = () => {
                     viewport={{ once: true }}
                     className="group relative"
                   >
-                    <span className={`flex items-center gap-1 text-[9px] font-mono px-2 py-1 bg-white/5 rounded ${tech.color} transition-all hover:scale-105 cursor-default`}>
+                    <span
+                      className={`flex items-center gap-1 text-[9px] font-mono px-2 py-1 bg-white/5 rounded ${tech.color} transition-all hover:scale-105 cursor-default`}
+                    >
                       {tech.icon}
                       {tech.name}
                     </span>
@@ -412,7 +365,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Testimonials Section - New */}
+      {/* Testimonials Section */}
       <section id="testimonials" className="relative z-10 max-w-7xl mx-auto px-6 py-20 border-t border-white/5">
         <motion.div
           initial={{ opacity: 0 }}
@@ -462,32 +415,6 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Metrics Section - New */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 py-20 border-t border-white/5">
-        <div className="grid md:grid-cols-4 gap-6">
-          {[
-            { value: "50+", label: "Research Publications", icon: <BookOpen className="w-5 h-5" />, trend: "+12 this year" },
-            { value: "100k+", label: "Active Users", icon: <Users className="w-5 h-5" />, trend: "Growing 20% MoM" },
-            { value: "99.5%", label: "Uptime SLA", icon: <Activity className="w-5 h-5" />, trend: "Enterprise grade" },
-            { value: "24/7", label: "Support", icon: <Clock className="w-5 h-5" />, trend: "Global coverage" }
-          ].map((metric, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: idx * 0.1 }}
-              viewport={{ once: true }}
-              className="text-center p-6 border border-white/10 bg-gradient-to-br from-white/[0.02] to-transparent"
-            >
-              <div className="flex justify-center mb-3 text-emerald-500">{metric.icon}</div>
-              <div className="text-2xl font-light text-white/90">{metric.value}</div>
-              <div className="text-[10px] font-mono text-white/40 mt-1">{metric.label}</div>
-              <span className="text-[8px] text-emerald-500/60 mt-2 inline-block">{metric.trend}</span>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
       {/* Resources Section */}
       <section id="resources" className="relative z-10 max-w-7xl mx-auto px-6 py-20 border-t border-white/5">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -506,15 +433,17 @@ export const HomePage: React.FC = () => {
             </p>
             <div className="grid grid-cols-2 gap-4">
               {resources.map((resource, idx) => (
-                <a
+                <Link
                   key={idx}
-                  href={resource.href}
+                  to={resource.href}
+                  target={resource.href.startsWith('http') ? '_blank' : undefined}
+                  rel={resource.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                   className="group p-4 border border-white/10 hover:border-emerald-500/30 transition-all"
                 >
                   <div className="flex items-center gap-2 mb-2 text-emerald-500">{resource.icon}</div>
                   <h4 className="text-xs font-mono text-white/80 mb-1">{resource.title}</h4>
                   <p className="text-[9px] text-white/40">{resource.description}</p>
-                </a>
+                </Link>
               ))}
             </div>
           </motion.div>
@@ -528,7 +457,8 @@ export const HomePage: React.FC = () => {
             <Code2 className="w-8 h-8 text-emerald-500 mx-auto mb-4" />
             <h3 className="text-lg font-light text-white/90 mb-2">Open for Contributions</h3>
             <p className="text-[11px] text-white/40 mb-6">
-              Star us on GitHub, report issues, or submit PRs. We welcome all contributions. If you like the work don't forget to give a star to this repository on GitHub
+              Star us on GitHub, report issues, or submit PRs. We welcome all contributions.
+              If you like the work don't forget to give a star to this repository on GitHub
             </p>
             <a
               href="https://github.com/mohan-i/genetix"
@@ -542,7 +472,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* CTA Section - Enhanced */}
+      {/* CTA Section */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 py-20">
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
@@ -574,76 +504,8 @@ export const HomePage: React.FC = () => {
           </Link>
         </motion.div>
       </section>
-
-      {/* Footer - Enhanced */}
-      <footer className="relative z-10 border-t border-white/10 py-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-sm flex items-center justify-center">
-                  <span className="text-[#0a0a0c] font-bold text-[10px]">G</span>
-                </div>
-                <span className="text-[10px] font-mono text-white/40">GENETIX v4.2</span>
-              </div>
-              <p className="text-[10px] text-white/30 leading-relaxed">
-                Advanced Bayesian inference engine for genetic probability modeling and risk assessment.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-[10px] font-mono text-white/50 uppercase tracking-wider mb-3">Product</h4>
-              <ul className="space-y-2">
-                {["Features", "API Reference", "Changelog", "Roadmap"].map((item, idx) => (
-                  <li key={idx}>
-                    <a href="#" className="text-[10px] text-white/30 hover:text-white/50 transition-colors">{item}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-[10px] font-mono text-white/50 uppercase tracking-wider mb-3">Resources</h4>
-              <ul className="space-y-2">
-                {["Documentation", "Research Paper", "GitHub", "Community"].map((item, idx) => (
-                  <li key={idx}>
-                    <a href="#" className="text-[10px] text-white/30 hover:text-white/50 transition-colors">{item}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-[10px] font-mono text-white/50 uppercase tracking-wider mb-3">Legal</h4>
-              <ul className="space-y-2">
-                {["Privacy Policy", "Terms of Service", "Ethics Statement", "HIPAA Compliance"].map((item, idx) => (
-                  <li key={idx}>
-                    <a href="#" className="text-[10px] text-white/30 hover:text-white/50 transition-colors">{item}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-            <span className="text-[9px] text-white/20 font-mono">GENETIX v4.2 • MIT License • Built with TypeScript & React</span>
-            <div className="flex gap-4">
-              <a href="#" className="text-white/20 hover:text-white/40 transition-colors">
-                <Github className="w-3 h-3" />
-              </a>
-              <a href="#" className="text-white/20 hover:text-white/40 transition-colors">
-                <Twitter className="w-3 h-3" />
-              </a>
-              <a href="#" className="text-white/20 hover:text-white/40 transition-colors">
-                <Mail className="w-3 h-3" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </Layout>
   );
 };
 
-// Star component for ratings
-const Star: React.FC<{ className?: string }> = ({ className }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-  </svg>
-);
+export default HomePage;

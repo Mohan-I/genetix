@@ -3,12 +3,51 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="/favicon.png" />
-  <title>Genetix: Trait Probability Engine App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  
+  <!-- Primary Meta Tags -->
+  <title>Genetix | Clinical Genetic Risk & Phenotype Engine</title>
+  <meta name="title" content="Genetix | Clinical Genetic Risk & Phenotype Engine" />
+  <meta name="description" content="Local-first clinical genetics platform powering pedigree-based Bayesian inheritance analysis, HPO variant filtering, and dynamic craniofacial heatmaps." />
+  <meta name="keywords" content="genetics, pedigree DAG, Bayesian risk calculation, HPO variant filtering, VCF parsing, dysmorphology, medical bioinformatics, ClinVar, ACMG" />
+  <meta name="author" content="Genetix Team" />
+  <meta name="robots" content="index, follow" />
+  <meta name="application-name" content="Genetix" />
+
+  <!-- Theme & PWA Capabilities -->
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Genetix" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://genetix-lake.vercel.app/" />
+  <meta property="og:title" content="Genetix | Clinical Genetic Risk & Phenotype Engine" />
+  <meta property="og:description" content="Deterministic, local-first pedigree inheritance DAG calculation, WASM-powered VCF variant prioritizer, and real-time landmark phenotype analysis." />
+  <meta property="og:image" content="./Genetix_banner.webp" />
+  <meta property="og:site_name" content="Genetix" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://genetix-lake.vercel.app/coming_soon" />
+  <meta name="twitter:title" content="Genetix | Clinical Genetic Risk & Phenotype Engine" />
+  <meta name="twitter:description" content="Deterministic, local-first pedigree inheritance DAG calculation, WASM-powered VCF variant prioritizer, and real-time landmark phenotype analysis." />
+  <meta name="twitter:image" content="https://genetix.app/og-preview.png" />
+
+  <!-- Favicon & Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Preconnect for Performance Optimization -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 </head>
 
-<body>
+<body class="bg-slate-900 text-slate-100 antialiased selection:bg-cyan-500 selection:text-white">
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

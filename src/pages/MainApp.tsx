@@ -60,16 +60,16 @@ const initialParent: ParentProfile = {
 export const MainApp: React.FC = () => {
   // Tab state
   const [activeTab, setActiveTab] = useState<'pedigree' | 'analysis'>('analysis');
-  
+
   // Parent profiles
   const [p1, setP1] = useState<ParentProfile>({ ...initialParent, name: 'Mother (Alpha)' });
   const [p2, setP2] = useState<ParentProfile>({ ...initialParent, name: 'Father (Beta)' });
-  
+
   // Analysis state
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
-  
+
   // Pedigree data with safe storage
   const [pedigreeData, setPedigreeData] = useSafeStorage<PedigreeData>(
     'pedigree_data',
@@ -143,11 +143,11 @@ export const MainApp: React.FC = () => {
         .filter(r => r.type === 'PARENT_CHILD' && r.targetId === proband.id)
         .map(r => pedigreeData.members.find(m => m.id === r.sourceId))
         .filter(Boolean);
-      
+
       if (parents.length >= 2) {
         const mother = parents.find(p => p?.gender === 'FEMALE');
         const father = parents.find(p => p?.gender === 'MALE');
-        
+
         if (mother) {
           setP1({
             ...p1,
@@ -171,99 +171,115 @@ export const MainApp: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0a0a0c] text-white/90 font-sans">
-      {/* Header */}
-      <header className="border-b border-white/10 p-6 sticky top-0 bg-[#0a0a0c]/95 backdrop-blur-sm z-10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-4">
-            <Link 
-              to="/" 
-              className="text-white/40 hover:text-white/80 transition-colors p-2 hover:bg-white/5 rounded-md"
-              title="Back to Home"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-sm flex items-center justify-center font-bold text-[#0a0a0c] text-xl">
-                G
-              </div>
-              <div>
-                <h1 className="text-xl font-medium tracking-[0.2em] hidden md:flex uppercase">Genetix Probability Engine</h1>
-                <p className="text-[10px] text-emerald-500 font-mono">Bayesian v4.2 • Mendelian Inheritance • Polygenic Risk Scoring</p>
+      {/*
+        Header + Tabs are wrapped in a SINGLE sticky container.
+        Previously each had its own `sticky` position with a hardcoded
+        `top-[73px]` offset for the tabs. Because the header's real height
+        changes (it wraps onto multiple lines on small screens, and the
+        DownloadReport button used to be crammed into the logo row), that
+        fixed offset stopped matching the header's actual height and the
+        tabs / download button ended up overlapping the header content.
+        Stacking them in normal document flow inside one sticky wrapper
+        means there's no offset to keep in sync — it just always sits
+        directly below the header, however tall it is.
+      */}
+      <div className="sticky top-0 z-30 bg-[#0a0a0c]/95 backdrop-blur-sm border-b border-white/10">
+        {/* Header */}
+        <header className="p-4 md:p-6">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-4">
+              <Link
+                to="/"
+                className="text-white/40 hover:text-white/80 transition-colors p-2 hover:bg-white/5 rounded-md"
+                title="Back to Home"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Link>
+              <div className="flex items-center space-x-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-sm flex items-center justify-center font-bold text-[#0a0a0c] text-xl">
+                  G
+                </div>
+                <div>
+                  <h1 className="text-xl font-medium tracking-[0.2em] hidden md:flex uppercase">Genetix Probability Engine</h1>
+                  <h1 className="text-[8px] font-medium tracking-[0.2em] md:hidden sm:flex uppercase">Genetix Probability Engine</h1>
+                  <p className="text-[10px] text-emerald-500 hidden md:flex font-mono">Bayesian v4.2 • Mendelian Inheritance • Polygenic Risk Scoring</p>
+                </div>
+                {showResults && activeTab === 'analysis' && (
+                <DownloadReport
+                  bloodProbabilities={bloodProbabilities}
+                  eyeProbabilities={eyeProbabilities}
+                  pathologyRisks={pathologyRisks}
+                  rhRisk={rhRisk}
+                  pregnancyRisk={pregnancyRisk}
+                  aiAnalysis={aiAnalysis}
+                  p1={p1}
+                  p2={p2}
+                />
+              )}
               </div>
             </div>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            {/* Pedigree Stats Badge */}
-            {activeTab === 'pedigree' && (
-              <span className="text-[12px] text-white/40 font-mono bg-white/5 px-4 py-1.5 rounded flex items-center gap-2">
-                <Users className="w-3 h-3" />
-                {pedigreeStats.members} members
-                {pedigreeStats.withMyopia > 0 && (
-                  <span className="text-blue-400 flex">• <img
-                          src={myopia}
-                          alt="Myopia"
-                          title="Myopia"
-                          className="w-4 h-4 object-contain"
-                        />  {pedigreeStats.withMyopia}</span>
-                )}
-                {pedigreeStats.withDiabetes > 0 && (
-                  <span className="text-red-400 flex">• <img
-                          src={diabetes}
-                          alt="Diabetes"
-                          title="Diabetes"
-                          className="w-4 h-4 object-contain"
-                        /> {pedigreeStats.withDiabetes}</span>
-                )}
-              </span>
-            )}
-            
-            {/* Download Report Button */}
-            {showResults && activeTab === 'analysis' && (
-              <DownloadReport
-                bloodProbabilities={bloodProbabilities}
-                eyeProbabilities={eyeProbabilities}
-                pathologyRisks={pathologyRisks}
-                rhRisk={rhRisk}
-                pregnancyRisk={pregnancyRisk}
-                aiAnalysis={aiAnalysis}
-                p1={p1}
-                p2={p2}
-              />
-            )}
-          </div>
-        </div>
-      </header>
 
-      {/* Tabs */}
-      <div className="border-b border-white/10 bg-[#0a0a0c]/95 backdrop-blur-sm sticky top-[73px] z-10">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex gap-6">
-            <button
-              onClick={() => setActiveTab('pedigree')}
-              className={`py-3 px-2 text-[10px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
-                activeTab === 'pedigree'
-                  ? 'border-emerald-500 text-emerald-400'
-                  : 'border-transparent text-white/40 hover:text-white/60'
-              }`}
-            >
-              <GitBranch className="w-3 h-3" />
-              Pedigree Builder
-              <span className="text-[8px] bg-white/5 px-1.5 py-0.5 rounded">
-                {pedigreeStats.members}
-              </span>
-            </button>
-            <button
-              onClick={() => setActiveTab('analysis')}
-              className={`py-3 px-2 text-[10px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 ${
-                activeTab === 'analysis'
-                  ? 'border-emerald-500 text-emerald-400'
-                  : 'border-transparent text-white/40 hover:text-white/60'
-              }`}
-            >
-              <Dna className="w-3 h-3" />
-              Genetic Analysis
-            </button>
+            {/* Right-side actions: pedigree stats OR download report — these
+                are mutually exclusive (different tabs), so they never
+                fight for space, and they live in their own flex row instead
+                of being nested inside the logo block. */}
+            <div className="flex items-center gap-3 flex-wrap justify-center md:justify-end">
+              {activeTab === 'pedigree' && (
+                <span className="text-[11px] md:text-[12px] text-white/40 font-mono bg-white/5 px-3 md:px-4 py-1.5 rounded flex items-center gap-2 flex-wrap justify-center">
+                  <Users className="w-3 h-3" />
+                  {pedigreeStats.members} members
+                  {pedigreeStats.withMyopia > 0 && (
+                    <span className="text-blue-400 flex items-center gap-1">• <img
+                      src={myopia}
+                      alt="Myopia"
+                      title="Myopia"
+                      className="w-4 h-4 object-contain"
+                    />  {pedigreeStats.withMyopia}</span>
+                  )}
+                  {pedigreeStats.withDiabetes > 0 && (
+                    <span className="text-red-400 flex items-center gap-1">• <img
+                      src={diabetes}
+                      alt="Diabetes"
+                      title="Diabetes"
+                      className="w-4 h-4 object-contain"
+                    /> {pedigreeStats.withDiabetes}</span>
+                  )}
+                </span>
+              )}
+
+              
+            </div>
+          </div>
+        </header>
+
+        {/* Tabs */}
+        <div className="border-t border-white/10">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="flex gap-6 overflow-x-auto">
+              <button
+                onClick={() => setActiveTab('pedigree')}
+                className={`py-3 px-2 text-[10px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${activeTab === 'pedigree'
+                    ? 'border-emerald-500 text-emerald-400'
+                    : 'border-transparent text-white/40 hover:text-white/60'
+                  }`}
+              >
+                <GitBranch className="w-3 h-3" />
+                Pedigree Builder
+                <span className="text-[8px] bg-white/5 px-1.5 py-0.5 rounded">
+                  {pedigreeStats.members}
+                </span>
+              </button>
+              <button
+                onClick={() => setActiveTab('analysis')}
+                className={`py-3 px-2 text-[10px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${activeTab === 'analysis'
+                    ? 'border-emerald-500 text-emerald-400'
+                    : 'border-transparent text-white/40 hover:text-white/60'
+                  }`}
+              >
+                <Dna className="w-3 h-3" />
+                Genetic Analysis
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -288,7 +304,7 @@ export const MainApp: React.FC = () => {
                   console.log('👤 Member selected:', member);
                 }}
               />
-              
+
               {/* Quick Action: Use selected pedigree for analysis */}
               <div className="mt-4 flex justify-end gap-3">
                 <button
@@ -386,13 +402,12 @@ export const MainApp: React.FC = () => {
                             <AlertCircle className="w-3 h-3 text-red-500" />
                             Maternal Risk Assessment
                           </h3>
-                          <div className={`inline-flex px-4 py-2 text-xs font-mono border ${
-                            pregnancyRisk.status === 'HIGH'
+                          <div className={`inline-flex px-4 py-2 text-xs font-mono border ${pregnancyRisk.status === 'HIGH'
                               ? 'bg-red-500/10 border-red-500/30 text-red-500'
                               : pregnancyRisk.status === 'MODERATE'
                                 ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-500'
                                 : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500'
-                          }`}>
+                            }`}>
                             {pregnancyRisk.status} RISK (Score: {pregnancyRisk.riskScore})
                           </div>
                           <ul className="space-y-2 mt-4">
