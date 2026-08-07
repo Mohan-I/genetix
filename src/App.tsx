@@ -26,7 +26,7 @@ const ScrollToTopWrapper: React.FC<ScrollToTopWrapperProps> = ({ children }) => 
     // Only scroll if the path actually changed (not first render)
     if (previousPath.current !== location.pathname) {
       previousPath.current = location.pathname;
-      
+
       // Use multiple scroll methods for reliability
       window.scrollTo({
         top: 0,
@@ -84,7 +84,7 @@ const RouteChangeListener: React.FC<RouteChangeListenerProps> = ({ children }) =
   useEffect(() => {
     // Log route changes for debugging
     console.log(`📍 Navigated to: ${location.pathname}`);
-    
+
     // Analytics tracking (if needed)
     // if (typeof window.gtag !== 'undefined') {
     //   window.gtag('config', 'GA_MEASUREMENT_ID', {
@@ -133,10 +133,10 @@ export const ScrollToTopButton: React.FC = () => {
       className="fixed bottom-8 right-8 z-50 p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-full backdrop-blur-sm cursor-pointer hover:bg-emerald-500/30 transition-all group"
       aria-label="Back to top"
     >
-      <svg 
-        className="w-5 h-5 text-emerald-400 group-hover:-translate-y-0.5 transition-transform" 
-        fill="none" 
-        viewBox="0 0 24 24" 
+      <svg
+        className="w-5 h-5 text-emerald-400 group-hover:-translate-y-0.5 transition-transform"
+        fill="none"
+        viewBox="0 0 24 24"
         stroke="currentColor"
       >
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
