@@ -1098,7 +1098,7 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
       )}
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2 p-2 md:p-3 border border-white/10 bg-mist-800 sticky top-[104px] md:top-[132px] z-20">
+      <div className="flex flex-wrap items-center gap-2 p-2 md:p-3 border border-white/10 bg-mist-800 sticky top-[80px] md:top-[60px] z-20">
         <div className="flex items-center gap-2">
           <Network className="w-4 h-4 text-emerald-500" />
           <span className="text-[10px] text-white/40 uppercase font-mono hidden xs:inline">Pedigree</span>
