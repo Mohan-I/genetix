@@ -373,10 +373,10 @@ export const ComingSoonPage: React.FC = () => {
                             <div className="flex flex-col items-center text-center flex-1">
                                 <div
                                     className={`w-3 h-3 rounded-full mb-3 ${m.status === 'done'
-                                            ? 'bg-emerald-500'
-                                            : m.status === 'active'
-                                                ? 'bg-emerald-500 animate-pulse ring-4 ring-emerald-500/20'
-                                                : 'bg-white/10 border border-white/20'
+                                        ? 'bg-emerald-500'
+                                        : m.status === 'active'
+                                            ? 'bg-emerald-500 animate-pulse ring-4 ring-emerald-500/20'
+                                            : 'bg-white/10 border border-white/20'
                                         }`}
                                 />
                                 <span
