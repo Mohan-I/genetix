@@ -1098,11 +1098,11 @@ export const PedigreeBuilder: React.FC<PedigreeBuilderProps> = ({
       )}
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2 p-2 md:p-3 border border-white/10 bg-slate-800 sticky top-[104px] md:top-[132px] z-20">
+      <div className="flex flex-wrap items-center gap-2 p-2 md:p-3 border border-white/10 bg-mist-800 sticky top-[104px] md:top-[132px] z-20">
         <div className="flex items-center gap-2">
           <Network className="w-4 h-4 text-emerald-500" />
           <span className="text-[10px] text-white/40 uppercase font-mono hidden xs:inline">Pedigree</span>
-          <span className="text-[8px] text-emerald-500/60 bg-emerald-500/10 px-2 py-0.5 rounded whitespace-nowrap">
+          <span className="text-[12px] text-emerald-500/60 bg-emerald-500/10 font-semibold px-2 py-0.5 rounded whitespace-nowrap">
             {pedigreeData.members.length} members
           </span>
           {!isValid && (

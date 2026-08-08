@@ -150,6 +150,7 @@ export const ContactPage: React.FC = () => {
           >
             <div className="border border-white/10 bg-white/[0.02] p-6 md:p-8">
               <h2 className="text-xl font-light text-white/90 mb-6">Send a Message</h2>
+              <hr className='mb-4'/>
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
