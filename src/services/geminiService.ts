@@ -95,7 +95,7 @@ Meanwhile, here's the analysis based on the calculated probabilities above.`;
     // Try multiple model names for compatibility
     const models = ['gemini-1.5-flash', 'gemini-pro', 'gemini-1.5-pro'];
     let lastError = null;
-    
+
     for (const model of models) {
       try {
         const response = await genAI.models.generateContent({
@@ -110,7 +110,7 @@ Meanwhile, here's the analysis based on the calculated probabilities above.`;
         }
       }
     }
-    
+
     throw lastError || new Error('No available models');
   } catch (error) {
     console.error("Gemini Analysis Error:", error);
@@ -120,7 +120,7 @@ Meanwhile, here's the analysis based on the calculated probabilities above.`;
 
 function generateFallbackAnalysis(parent1: ParentProfile, parent2: ParentProfile): string {
   const rhRisk = parent1.bloodType.includes('-') && parent2.bloodType.includes('+');
-  
+
   return `## 🧬 Genetic Analysis Summary
 
 ### Polygenic Trait Inheritance
@@ -131,23 +131,23 @@ function generateFallbackAnalysis(parent1: ParentProfile, parent2: ParentProfile
 
 ### Pathological Risk Assessment
 
-**Thalassemia**: ${parent1.thalassemia !== 'None' || parent2.thalassemia !== 'None' ? 
-  'Carrier status detected in one or both parents. Recommended: Partner screening and genetic counseling.' : 
-  'No carrier status detected. Population-level risk only.'}
+**Thalassemia**: ${parent1.thalassemia !== 'None' || parent2.thalassemia !== 'None' ?
+      'Carrier status detected in one or both parents. Recommended: Partner screening and genetic counseling.' :
+      'No carrier status detected. Population-level risk only.'}
 
-**Color Blindness**: ${parent1.colorBlindness || parent2.colorBlindness ? 
-  'X-linked carrier pattern detected. Male offspring have elevated risk. Recommended: Pediatric vision screening.' : 
-  'No family history detected. Standard vision screening recommended.'}
+**Color Blindness**: ${parent1.colorBlindness || parent2.colorBlindness ?
+      'X-linked carrier pattern detected. Male offspring have elevated risk. Recommended: Pediatric vision screening.' :
+      'No family history detected. Standard vision screening recommended.'}
 
 ### Maternal Health Considerations
 
-${parent1.maternalHealth?.age && parent1.maternalHealth.age > 35 ? 
-  `⚠️ **Advanced Maternal Age**: Age ${parent1.maternalHealth.age} - Consider enhanced prenatal screening and genetic counseling.` : 
-  `✓ Maternal age ${parent1.maternalHealth?.age} within optimal range.`}
+${parent1.maternalHealth?.age && parent1.maternalHealth.age > 35 ?
+      `⚠️ **Advanced Maternal Age**: Age ${parent1.maternalHealth.age} - Consider enhanced prenatal screening and genetic counseling.` :
+      `✓ Maternal age ${parent1.maternalHealth?.age} within optimal range.`}
 
-${rhRisk ? 
-  `⚠️ **Rh Incompatibility**: Rh-negative mother with Rh-positive father requires RhoGAM prophylaxis at 28 weeks and post-delivery to prevent HDN.` : 
-  `✓ No Rh incompatibility detected.`}
+${rhRisk ?
+      `⚠️ **Rh Incompatibility**: Rh-negative mother with Rh-positive father requires RhoGAM prophylaxis at 28 weeks and post-delivery to prevent HDN.` :
+      `✓ No Rh incompatibility detected.`}
 
 ### Preventive Recommendations
 

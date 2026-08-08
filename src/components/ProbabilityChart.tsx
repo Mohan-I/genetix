@@ -7,7 +7,7 @@ interface ProbabilityChartProps {
   data: any;
 }
 
-const COLORS = [ '#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
+const COLORS = ['#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
 
 type ChartType = 'pie' | 'bar';
 
@@ -18,7 +18,7 @@ export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ title, data 
   
   if (!data) {
     return (
-      <div className="p-6 border border-white/10 bg-[#0a0a0c] min-h-[320px]">
+      <div className="p-4 sm:p-6 border border-white/10 bg-[#0a0a0c] min-h-[320px] w-full max-w-full overflow-hidden">
         <h3 className="text-[11px] font-mono text-white/40 uppercase tracking-wider mb-4">{title}</h3>
         <div className="flex items-center justify-center h-48 text-white/20 text-sm">
           No data available
@@ -45,7 +45,7 @@ export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ title, data 
   
   if (chartData.length === 0) {
     return (
-      <div className="p-6 border border-white/10 bg-[#0a0a0c] min-h-[320px]">
+      <div className="p-4 sm:p-6 border border-white/10 bg-[#0a0a0c] min-h-[320px] w-full max-w-full overflow-hidden">
         <h3 className="text-[11px] font-mono text-white/40 uppercase tracking-wider mb-4">{title}</h3>
         <div className="flex items-center justify-center h-48 text-white/20 text-sm">
           No probability data available
@@ -56,7 +56,6 @@ export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ title, data 
   
   chartData.sort((a, b) => b.value - a.value);
   
-  // Custom tooltip for better visibility
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -70,12 +69,25 @@ export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ title, data 
     }
     return null;
   };
+
+  // Truncate long labels on Y-Axis for mobile bar chart
+  const renderYAxisTick = (props: any) => {
+    const { x, y, payload } = props;
+    const label = payload.value.length > 10 ? `${payload.value.substring(0, 9)}…` : payload.value;
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text x={-5} y={3} dy={0} textAnchor="end" fill="#ffffff60" fontSize={10} fontFamily="monospace">
+          {label}
+        </text>
+      </g>
+    );
+  };
   
   return (
-    <div className="p-6 border border-white/10 bg-[#0a0a0c] min-h-[380px] zoom-80">
+    <div className="p-4 sm:p-6 border border-white/10 bg-[#0a0a0c] min-h-[380px] w-full max-w-full overflow-hidden box-border">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-[11px] font-mono text-white/40 uppercase tracking-wider">{title}</h3>
-        <div className="flex gap-1 bg-white/5 rounded p-0.5">
+        <h3 className="text-[11px] font-mono text-white/40 uppercase tracking-wider truncate mr-2">{title}</h3>
+        <div className="flex gap-1 bg-white/5 rounded p-0.5 shrink-0">
           <button
             onClick={() => setChartType('pie')}
             className={`p-1.5 rounded transition-all ${chartType === 'pie' ? 'bg-emerald-500/20 text-emerald-500' : 'text-white/30 hover:text-white/50'}`}
@@ -93,23 +105,19 @@ export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ title, data 
         </div>
       </div>
       
-      <div style={{ width: '100%', height: 280 }}>
+      <div className="w-full h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
           {chartType === 'pie' ? (
-            <PieChart>
+            <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
               <Pie
                 data={chartData}
                 cx="50%"
-                cy="50%"
-                innerRadius={55}
-                outerRadius={85}
+                cy="45%"
+                innerRadius={40}
+                outerRadius={70}
                 paddingAngle={2}
                 dataKey="value"
-                label={({ name, percent }) => {
-                  const pct = (percent * 100).toFixed(0);
-                  return pct !== '0' ? `${name}: ${pct}%` : '';
-                }}
-                labelLine={{ stroke: '#ffffff30', strokeWidth: 1 }}
+                label={false} /* Turned off outer pie labels to stop mobile clipping */
               >
                 {chartData.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="#0a0a0c" strokeWidth={2} />
@@ -118,24 +126,26 @@ export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ title, data 
               <Tooltip content={<CustomTooltip />} />
               <Legend 
                 verticalAlign="bottom" 
-                height={46}
+                height={50}
                 wrapperStyle={{ 
                   fontSize: '10px', 
                   fontFamily: 'monospace',
-                  paddingTop: '10px'
+                  paddingTop: '8px',
+                  width: '100%',
+                  overflowX: 'auto'
                 }}
-                formatter={(value) => <span className="text-white/60 hover:text-emerald-400 transition-colors cursor-pointer">{value}</span>}
+                formatter={(value) => <span className="text-white/60 hover:text-emerald-400 transition-colors cursor-pointer mr-2">{value}</span>}
               />
             </PieChart>
           ) : (
-            <BarChart data={chartData} layout="vertical" margin={{ left: 60, right: 20, top: 20, bottom: 20 }}>
+            <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
               <XAxis type="number" domain={[0, 100]} tick={{ fill: '#ffffff40', fontSize: 10 }} />
               <YAxis 
                 type="category" 
                 dataKey="name" 
-                tick={{ fill: '#ffffff60', fontSize: 10, fontFamily: 'monospace' }}
-                width={60}
+                tick={renderYAxisTick}
+                width={65}
               />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="value" radius={[0, 4, 4, 0]}>
