@@ -388,7 +388,7 @@ export const MainApp: React.FC = () => {
                       className="flex flex-col"
                     >
                       {/* Probability Grid */}
-                      <div className="grid md:grid-cols-2 sm:w-[90%] border-b border-white/10">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <ProbabilityChart title="ABO/Rh Blood Distribution" data={bloodProbabilities} />
                         <div className="border-l border-white/10">
                           <ProbabilityChart title="Eye Color Distribution" data={eyeProbabilities} />
