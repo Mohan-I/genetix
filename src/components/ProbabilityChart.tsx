@@ -84,7 +84,7 @@ export const ProbabilityChart: React.FC<ProbabilityChartProps> = ({ title, data 
   
   return (
     /* min-w-0 on the outer block overrides default flex/grid min-content behavior */
-    <div className="w-full min-w-0 max-w-full p-4 sm:p-6 border border-white/10 bg-[#0a0a0c] box-border overflow-hidden">
+    <div className="w-full min-w-0 max-w-[90%] justify-self-center p-4 sm:p-6 border border-white/10 bg-[#0a0a0c] box-border overflow-hidden">
       <div className="flex justify-between items-center mb-4 min-w-0">
         <h3 className="text-[11px] font-mono text-white/40 uppercase tracking-wider truncate mr-2">{title}</h3>
         <div className="flex gap-1 bg-white/5 rounded p-0.5 shrink-0">
