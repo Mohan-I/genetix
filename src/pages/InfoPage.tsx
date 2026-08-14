@@ -179,191 +179,191 @@ export const ExplanationPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a0c] via-[#0f0f13] to-[#0a0a0c]">
       <Layout >
 
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zMCAzMG0yOSAwYTI5IDI5IDAgMSAxLTU4IDAgMjkgMjkgMCAwIDEgNTggMHoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L2c+PC9zdmc+')] opacity-20" />
-      </div>
-
-      {/* Hero */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center"
-        >
-          <motion.div
-            style={{ opacity }}
-            className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-6"
-          >
-            <Brain className="w-3 h-3 text-emerald-500" />
-            <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider">Bayesian v4.2 • ML Active</span>
-          </motion.div>
-          <h1 className="text-3xl md:text-5xl font-light tracking-tight mb-4">
-            <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
-              {typedTitle}
-            </span>
-          </h1>
-          <p className="text-white/40 text-md max-w-3xl mx-auto font-mono leading-relaxed">
-            Understanding the mathematical foundations behind GENETIX — from Bayes' theorem to polygenic risk scoring.
-          </p>
-        </motion.div>
-      </section>
-
-      {/* Methods Overview */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-16">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="grid md:grid-cols-4 gap-4"
-        >
-          {methods.map((method, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              viewport={{ once: true }}
-              className={`p-4 border border-white/10 bg-white/[0.02] hover:border-${method.color}-500/30 transition-all group`}
-            >
-              <div className={`text-${method.color}-500 mb-2`}>{method.icon}</div>
-              <h4 className="text-xs font-mono text-white/80 mb-1">{method.title}</h4>
-              <p className="text-[10px] text-white/40 leading-relaxed">{method.description}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
-
-      {/* Equations */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-20">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full mb-4">
-            <Calculator className="w-3 h-3 text-emerald-500" />
-            <span className="text-[9px] font-mono text-white/50 uppercase tracking-wider">Core Mathematics</span>
-          </div>
-          <h2 className="text-3xl font-light text-white/90 mb-4">Key Equations & Models</h2>
-          <p className="text-white/40 text-sm font-mono max-w-2xl mx-auto">
-            The mathematical foundation powering GENETIX's genetic probability engine
-          </p>
-        </motion.div>
-
-        <div className="grid lg:grid-cols-2 gap-6">
-          {equations.map((eq, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.08 }}
-              viewport={{ once: true }}
-              className="border border-white/10 bg-white/[0.02] p-6 hover:border-emerald-500/30 transition-all group"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="text-emerald-500">{eq.symbol}</div>
-                <h3 className="text-sm font-mono text-white/80">{eq.title}</h3>
-              </div>
-
-              <div className="bg-black/30 border border-white/5 p-4 mb-4 font-mono text-center">
-                <span className="text-emerald-400 text-lg tracking-wider">{eq.formula}</span>
-              </div>
-
-              <p className="text-[11px] text-white/50 leading-relaxed mb-3">{eq.description}</p>
-
-              <div className="space-y-1.5 mb-3">
-                {eq.variables.map((v, vi) => (
-                  <p key={vi} className="text-[10px] text-white/30 font-mono">• {v}</p>
-                ))}
-              </div>
-
-              <div className="bg-emerald-500/5 border border-emerald-500/10 p-3">
-                <p className="text-[10px] text-emerald-400/70 font-mono leading-relaxed">
-                  <span className="text-emerald-500 font-bold">→</span> {eq.example}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+        {/* Animated Background */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zMCAzMG0yOSAwYTI5IDI5IDAgMSAxLTU4IDAgMjkgMjkgMCAwIDEgNTggMHoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L2c+PC9zdmc+')] opacity-20" />
         </div>
-      </section>
 
-      {/* Architecture Flow */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-20 border-t border-white/5 pt-20">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full mb-4">
-            <Layers className="w-3 h-3 text-emerald-500" />
-            <span className="text-[9px] font-mono text-white/50 uppercase tracking-wider">Pipeline Architecture</span>
-          </div>
-          <h2 className="text-3xl font-light text-white/90 mb-4">End-to-End Processing Flow</h2>
-        </motion.div>
-
-        <div className="grid md:grid-cols-5 gap-3 max-w-5xl mx-auto">
-          {[
-            { step: "1", label: "Input", icon: <Dna className="w-4 h-4" />, desc: "Phenotype data entry" },
-            { step: "2", label: "Bayesian", icon: <Sigma className="w-4 h-4" />, desc: "Posterior computation" },
-            { step: "3", label: "AI Synthesis", icon: <Brain className="w-4 h-4" />, desc: "Gemini 2.0 analysis" },
-            { step: "4", label: "Risk Scoring", icon: <Shield className="w-4 h-4" />, desc: "Polygenic + maternal" },
-            { step: "5", label: "Visualization", icon: <BarChart3 className="w-4 h-4" />, desc: "Interactive charts" }
-          ].map((item, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: idx * 0.1 }}
-              viewport={{ once: true }}
-              className="text-center p-4 border border-white/10 bg-white/[0.02] hover:border-emerald-500/30 transition-all relative"
-            >
-              {idx < 4 && (
-                <div className="hidden md:block absolute -right-1.5 top-1/2 -translate-y-1/2 text-white/10 text-xs">→</div>
-              )}
-              <div className="w-8 h-8 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-500 text-xs font-mono mb-2">
-                {item.step}
-              </div>
-              <div className="text-emerald-500/60 flex justify-center mb-1">{item.icon}</div>
-              <div className="text-[10px] font-mono text-white/60">{item.label}</div>
-              <div className="text-[8px] text-white/30 mt-0.5">{item.desc}</div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-20">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="text-center bg-gradient-to-r from-emerald-500/5 via-transparent to-emerald-500/5 border-y border-white/10 py-16"
-        >
+        {/* Hero */}
+        <section className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-16">
           <motion.div
-            animate={{ y: [0, -5, 0] }}
-            transition={{ repeat: Infinity, duration: 2, repeatDelay: 3 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
           >
-            <Sparkles className="w-8 h-8 text-emerald-500 mx-auto mb-4" />
+            <motion.div
+              style={{ opacity }}
+              className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-6"
+            >
+              <Brain className="w-3 h-3 text-emerald-500" />
+              <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider">Bayesian v4.2 • ML Active</span>
+            </motion.div>
+            <h1 className="text-3xl md:text-5xl font-light tracking-tight mb-4">
+              <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
+                {typedTitle}
+              </span>
+            </h1>
+            <p className="text-white/40 text-md max-w-3xl mx-auto font-mono leading-relaxed">
+              Understanding the mathematical foundations behind GENETIX — from Bayes' theorem to polygenic risk scoring.
+            </p>
           </motion.div>
-          <h2 className="text-2xl md:text-3xl font-light text-white/90 mb-4">Ready to Explore the Math?</h2>
-          <p className="text-white/40 text-sm font-mono mb-8 max-w-md mx-auto">
-            Launch the interactive engine to see these equations in action.
-          </p>
-          <Link
-            to="/app"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-[#0a0a0c] font-mono text-sm font-bold uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/20"
+        </section>
+
+        {/* Methods Overview */}
+        <section className="relative z-10 max-w-7xl mx-auto px-6 pb-16">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="grid md:grid-cols-4 gap-4"
           >
-            Launch App <ArrowRight className="w-4 h-4" />
-          </Link>
-        </motion.div>
-      </section>
+            {methods.map((method, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                viewport={{ once: true }}
+                className={`p-4 border border-white/10 bg-white/[0.02] hover:border-${method.color}-500/30 transition-all group`}
+              >
+                <div className={`text-${method.color}-500 mb-2`}>{method.icon}</div>
+                <h4 className="text-xs font-mono text-white/80 mb-1">{method.title}</h4>
+                <p className="text-[10px] text-white/40 leading-relaxed">{method.description}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+
+        {/* Equations */}
+        <section className="relative z-10 max-w-7xl mx-auto px-6 pb-20">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full mb-4">
+              <Calculator className="w-3 h-3 text-emerald-500" />
+              <span className="text-[9px] font-mono text-white/50 uppercase tracking-wider">Core Mathematics</span>
+            </div>
+            <h2 className="text-3xl font-light text-white/90 mb-4">Key Equations & Models</h2>
+            <p className="text-white/40 text-sm font-mono max-w-2xl mx-auto">
+              The mathematical foundation powering GENETIX's genetic probability engine
+            </p>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-6">
+            {equations.map((eq, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.08 }}
+                viewport={{ once: true }}
+                className="border border-white/10 bg-white/[0.02] p-6 hover:border-emerald-500/30 transition-all group"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="text-emerald-500">{eq.symbol}</div>
+                  <h3 className="text-sm font-mono text-white/80">{eq.title}</h3>
+                </div>
+
+                <div className="bg-black/30 border border-white/5 p-4 mb-4 font-mono text-center">
+                  <span className="text-emerald-400 text-lg tracking-wider">{eq.formula}</span>
+                </div>
+
+                <p className="text-[11px] text-white/50 leading-relaxed mb-3">{eq.description}</p>
+
+                <div className="space-y-1.5 mb-3">
+                  {eq.variables.map((v, vi) => (
+                    <p key={vi} className="text-[10px] text-white/30 font-mono">• {v}</p>
+                  ))}
+                </div>
+
+                <div className="bg-emerald-500/5 border border-emerald-500/10 p-3">
+                  <p className="text-[10px] text-emerald-400/70 font-mono leading-relaxed">
+                    <span className="text-emerald-500 font-bold">→</span> {eq.example}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* Architecture Flow */}
+        <section className="relative z-10 max-w-7xl mx-auto px-6 pb-20 border-t border-white/5 pt-20">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full mb-4">
+              <Layers className="w-3 h-3 text-emerald-500" />
+              <span className="text-[9px] font-mono text-white/50 uppercase tracking-wider">Pipeline Architecture</span>
+            </div>
+            <h2 className="text-3xl font-light text-white/90 mb-4">End-to-End Processing Flow</h2>
+          </motion.div>
+
+          <div className="grid md:grid-cols-5 gap-3 max-w-5xl mx-auto">
+            {[
+              { step: "1", label: "Input", icon: <Dna className="w-4 h-4" />, desc: "Phenotype data entry" },
+              { step: "2", label: "Bayesian", icon: <Sigma className="w-4 h-4" />, desc: "Posterior computation" },
+              { step: "3", label: "AI Synthesis", icon: <Brain className="w-4 h-4" />, desc: "Gemini 2.0 analysis" },
+              { step: "4", label: "Risk Scoring", icon: <Shield className="w-4 h-4" />, desc: "Polygenic + maternal" },
+              { step: "5", label: "Visualization", icon: <BarChart3 className="w-4 h-4" />, desc: "Interactive charts" }
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ delay: idx * 0.1 }}
+                viewport={{ once: true }}
+                className="text-center p-4 border border-white/10 bg-white/[0.02] hover:border-emerald-500/30 transition-all relative"
+              >
+                {idx < 4 && (
+                  <div className="hidden md:block absolute -right-1.5 top-1/2 -translate-y-1/2 text-white/10 text-xs">→</div>
+                )}
+                <div className="w-8 h-8 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-500 text-xs font-mono mb-2">
+                  {item.step}
+                </div>
+                <div className="text-emerald-500/60 flex justify-center mb-1">{item.icon}</div>
+                <div className="text-[10px] font-mono text-white/60">{item.label}</div>
+                <div className="text-[8px] text-white/30 mt-0.5">{item.desc}</div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="relative z-10 max-w-7xl mx-auto px-6 pb-20">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="text-center bg-gradient-to-r from-emerald-500/5 via-transparent to-emerald-500/5 border-y border-white/10 py-16"
+          >
+            <motion.div
+              animate={{ y: [0, -5, 0] }}
+              transition={{ repeat: Infinity, duration: 2, repeatDelay: 3 }}
+            >
+              <Sparkles className="w-8 h-8 text-emerald-500 mx-auto mb-4" />
+            </motion.div>
+            <h2 className="text-2xl md:text-3xl font-light text-white/90 mb-4">Ready to Explore the Math?</h2>
+            <p className="text-white/40 text-sm font-mono mb-8 max-w-md mx-auto">
+              Launch the interactive engine to see these equations in action.
+            </p>
+            <Link
+              to="/app"
+              className="inline-flex items-center gap-2 px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-[#0a0a0c] font-mono text-sm font-bold uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/20"
+            >
+              Launch App <ArrowRight className="w-4 h-4" />
+            </Link>
+          </motion.div>
+        </section>
       </ Layout >
     </div>
   );
