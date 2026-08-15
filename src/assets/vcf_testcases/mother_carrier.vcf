@@ -1,0 +1,11 @@
+##fileformat=VCFv4.2
+##fileDate=20260815
+##source=GenetixTestEngine
+##reference=GRCh38
+##INFO=<ID=RS,Number=1,Type=String,Description="dbSNP ID">
+##INFO=<ID=CLNSIG,Number=.,Type=String,Description="ClinVar Clinical Significance">
+##INFO=<ID=GENE,Number=1,Type=String,Description="Gene Symbol">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE
+chr7	117559590	rs113993960	CTTT	C	.	PASS	RS=113993960;GENE=CFTR;CLNSIG=Pathogenic	GT	0/1
+chr13	32316461	rs80357065	A	G	.	PASS	RS=80357065;GENE=BRCA2;CLNSIG=Benign	GT	0/0
