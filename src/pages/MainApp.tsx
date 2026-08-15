@@ -173,11 +173,11 @@ export const MainApp: React.FC = () => {
   const audienceSummary = useMemo(() => {
     const total = pedigreeData.members.length;
     if (total === 0) return null;
-    
+
     const affected = pedigreeData.members.filter(m => m.affected).length;
     const carriers = pedigreeData.members.filter(m => m.carrier).length;
     const probands = pedigreeData.members.filter(m => m.isProband).length;
-    
+
     return {
       total,
       affected,
@@ -264,9 +264,8 @@ export const MainApp: React.FC = () => {
             >
               <button
                 onClick={() => { setActiveTab('pedigree'); setIsMobileMenuOpen(false); }}
-                className={`w-full text-left px-3 py-2 text-xs font-mono uppercase tracking-wider flex items-center gap-2 rounded ${
-                  activeTab === 'pedigree' ? 'bg-emerald-500/10 text-emerald-400' : 'text-white/60 hover:bg-white/5'
-                }`}
+                className={`w-full text-left px-3 py-2 text-xs font-mono uppercase tracking-wider flex items-center gap-2 rounded ${activeTab === 'pedigree' ? 'bg-emerald-500/10 text-emerald-400' : 'text-white/60 hover:bg-white/5'
+                  }`}
               >
                 <GitBranch className="w-4 h-4" />
                 Pedigree Builder
@@ -274,18 +273,16 @@ export const MainApp: React.FC = () => {
               </button>
               <button
                 onClick={() => { setActiveTab('analysis'); setIsMobileMenuOpen(false); }}
-                className={`w-full text-left px-3 py-2 text-xs font-mono uppercase tracking-wider flex items-center gap-2 rounded ${
-                  activeTab === 'analysis' ? 'bg-emerald-500/10 text-emerald-400' : 'text-white/60 hover:bg-white/5'
-                }`}
+                className={`w-full text-left px-3 py-2 text-xs font-mono uppercase tracking-wider flex items-center gap-2 rounded ${activeTab === 'analysis' ? 'bg-emerald-500/10 text-emerald-400' : 'text-white/60 hover:bg-white/5'
+                  }`}
               >
                 <Dna className="w-4 h-4" />
                 Genetic Analysis
               </button>
               <button
                 onClick={() => { setActiveTab('pgt'); setIsMobileMenuOpen(false); }}
-                className={`w-full text-left px-3 py-2 text-xs font-mono uppercase tracking-wider flex items-center gap-2 rounded ${
-                  activeTab === 'pgt' ? 'bg-emerald-500/10 text-emerald-400' : 'text-white/60 hover:bg-white/5'
-                }`}
+                className={`w-full text-left px-3 py-2 text-xs font-mono uppercase tracking-wider flex items-center gap-2 rounded ${activeTab === 'pgt' ? 'bg-emerald-500/10 text-emerald-400' : 'text-white/60 hover:bg-white/5'
+                  }`}
               >
                 <Activity className="w-4 h-4" />
                 PGT Simulator
@@ -300,11 +297,10 @@ export const MainApp: React.FC = () => {
             <div className="flex gap-6 overflow-x-auto scrollbar-thin scrollbar-thumb-emerald-500/20 scrollbar-track-transparent">
               <button
                 onClick={() => setActiveTab('pedigree')}
-                className={`py-3 px-2 text-[10px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${
-                  activeTab === 'pedigree'
+                className={`py-3 px-2 text-[10px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${activeTab === 'pedigree'
                     ? 'border-emerald-500 text-emerald-400'
                     : 'border-transparent text-white/40 hover:text-white/60'
-                }`}
+                  }`}
               >
                 <GitBranch className="w-3 h-3" />
                 Pedigree Builder
@@ -314,22 +310,20 @@ export const MainApp: React.FC = () => {
               </button>
               <button
                 onClick={() => setActiveTab('analysis')}
-                className={`py-3 px-2 text-[10px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${
-                  activeTab === 'analysis'
+                className={`py-3 px-2 text-[10px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${activeTab === 'analysis'
                     ? 'border-emerald-500 text-emerald-400'
                     : 'border-transparent text-white/40 hover:text-white/60'
-                }`}
+                  }`}
               >
                 <Dna className="w-3 h-3" />
                 Genetic Analysis
               </button>
               <button
                 onClick={() => setActiveTab('pgt')}
-                className={`py-3 px-2 text-[10px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${
-                  activeTab === 'pgt'
+                className={`py-3 px-2 text-[10px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${activeTab === 'pgt'
                     ? 'border-emerald-500 text-emerald-400'
                     : 'border-transparent text-white/40 hover:text-white/60'
-                }`}
+                  }`}
               >
                 <Activity className="w-3 h-3" />
                 PGT Simulator
@@ -344,11 +338,10 @@ export const MainApp: React.FC = () => {
             <div className="flex gap-2 overflow-x-auto py-2 scrollbar-thin scrollbar-thumb-emerald-500/20 scrollbar-track-transparent">
               <button
                 onClick={() => setActiveTab('pedigree')}
-                className={`px-3 py-1.5 text-[9px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-1.5 whitespace-nowrap ${
-                  activeTab === 'pedigree'
+                className={`px-3 py-1.5 text-[9px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'pedigree'
                     ? 'border-emerald-500 text-emerald-400'
                     : 'border-transparent text-white/40 hover:text-white/60'
-                }`}
+                  }`}
               >
                 <GitBranch className="w-3 h-3" />
                 Pedigree
@@ -356,22 +349,20 @@ export const MainApp: React.FC = () => {
               </button>
               <button
                 onClick={() => setActiveTab('analysis')}
-                className={`px-3 py-1.5 text-[9px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-1.5 whitespace-nowrap ${
-                  activeTab === 'analysis'
+                className={`px-3 py-1.5 text-[9px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'analysis'
                     ? 'border-emerald-500 text-emerald-400'
                     : 'border-transparent text-white/40 hover:text-white/60'
-                }`}
+                  }`}
               >
                 <Dna className="w-3 h-3" />
                 Analysis
               </button>
               <button
                 onClick={() => setActiveTab('pgt')}
-                className={`px-3 py-1.5 text-[9px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-1.5 whitespace-nowrap ${
-                  activeTab === 'pgt'
+                className={`px-3 py-1.5 text-[9px] font-mono uppercase tracking-wider transition-all border-b-2 flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'pgt'
                     ? 'border-emerald-500 text-emerald-400'
                     : 'border-transparent text-white/40 hover:text-white/60'
-                }`}
+                  }`}
               >
                 <Activity className="w-3 h-3" />
                 PGT
@@ -548,13 +539,12 @@ export const MainApp: React.FC = () => {
                           <AlertCircle className="w-3 h-3 text-red-500" />
                           Maternal Risk
                         </h3>
-                        <div className={`inline-flex px-3 md:px-4 py-1.5 md:py-2 text-[10px] md:text-xs font-mono border ${
-                          pregnancyRisk.status === 'HIGH'
+                        <div className={`inline-flex px-3 md:px-4 py-1.5 md:py-2 text-[10px] md:text-xs font-mono border ${pregnancyRisk.status === 'HIGH'
                             ? 'bg-red-500/10 border-red-500/30 text-red-500'
                             : pregnancyRisk.status === 'MODERATE'
                               ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-500'
                               : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500'
-                        }`}>
+                          }`}>
                           {pregnancyRisk.status} RISK (Score: {pregnancyRisk.riskScore})
                         </div>
                         <ul className="space-y-1.5 md:space-y-2">

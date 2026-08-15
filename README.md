@@ -10,6 +10,65 @@ Genetix is a sophisticated genetic inheritance prediction platform that combines
 
 ## 🧬 Why Genetix? And What Problems Does It Solve ?
 
+When applying **Pedigree Logic** and a **Probability Trait Engine** to observational datasets, graph-based familial networks, or entity-trait lineage tracking, the mathematical framework relies on **Conditional Probability**, **Mendelian Factorization**, and **Bayesian Updating**.
+
+---
+
+## 1. Pedigree Directed Acyclic Graph (DAG) Structure
+
+A pedigree network is modeled as a Directed Acyclic Graph $G = (V, E)$, where:
+
+* $V = \{1, 2, \dots, N\}$ represents individuals or entities.
+* $E \subset V \times V$ represents parental dependency edges directed from parent to offspring.
+
+For any individual $i \in V$:
+
+* $\text{Pa}(i)$ denotes the set of parent nodes for $i$.
+* If $\text{Pa}(i) = \emptyset$, node $i$ is designated as a **founder**.
+
+---
+
+## 2. Genotype & Trait Factorization (Mendelian Inheritance Model)
+
+Let $G_i$ represent the latent discrete genotype of entity $i$, and $P_i$ represent the observed phenotype or trait status ($P_i \in \{0, 1\}$).
+
+The joint likelihood across the entire pedigree tree factorizes as:
+
+$$P(G_1, \dots, G_N, P_1, \dots, P_N) = \prod_{i=1}^N P(P_i \mid G_i) \cdot \prod_{i \in \text{Founders}} P(G_i) \cdot \prod_{j \notin \text{Founders}} P\left(G_j \mid G_{\text{Pa}(j)}\right)$$
+
+Where:
+
+* **Penetrance Function $P(P_i \mid G_i)$:** The probability that genotype $G_i$ expresses trait $P_i$.
+* **Transition Matrix $P\left(G_j \mid G_{\text{Pa}(j)}\right)$:** The probability that parents with genotypes $G_{\text{Pa}(j)}$ transmit genotype $G_j$ to offspring $j$.
+
+---
+
+## 3. Bayesian Updating in Trait Engines
+
+To calculate the posterior probability that an unobserved or carrier node $k$ possesses a specific trait allele given all historical pedigree observations $\mathbf{P}_{\text{obs}}$:
+
+$$P(G_k \mid \mathbf{P}_{\text{obs}}) = \frac{P(\mathbf{P}_{\text{obs}} \mid G_k) \cdot P(G_k)}{P(\mathbf{P}_{\text{obs}})}$$
+
+Expanding $P(\mathbf{P}_{\text{obs}})$ across all mutually exclusive candidate genotypes $g \in \mathcal{G}$:
+
+$$P(G_k = g \mid \mathbf{P}_{\text{obs}}) = \frac{P(\mathbf{P}_{\text{obs}} \mid G_k = g) \cdot P(G_k = g)}{\sum_{g' \in \mathcal{G}} P(\mathbf{P}_{\text{obs}} \mid G_k = g') \cdot P(G_k = g')}$$
+
+### Posterior Odds Ratio
+
+When comparing two candidate inheritance traits or hypotheses $H_1$ and $H_2$:
+
+$$\text{Posterior Odds} = \frac{P(H_1 \mid \mathbf{P}_{\text{obs}})}{P(H_2 \mid \mathbf{P}_{\text{obs}})} = \underbrace{\frac{P(H_1)}{P(H_2)}}_{\text{Prior Odds}} \times \underbrace{\frac{P(\mathbf{P}_{\text{obs}} \mid H_1)}{P(\mathbf{P}_{\text{obs}} \mid H_2)}}_{\text{Likelihood Ratio (Bayes Factor)}}$$
+
+---
+
+## 4. Transmission Lineage Computation Algorithm (Elston-Stewart Algorithm)
+
+For large multi-generational graphs, likelihood evaluations compute sum-products recursively from descendants back to founders:
+
+$$L = \sum_{G_1} \dots \sum_{G_N} \left[ \prod_{i=1}^N P(P_i \mid G_i) P(G_i \mid G_{\text{Pa}(i)}) \right]$$
+
+This formulation guarantees exact evaluation of trait transmission probabilities across $N$ generations without missing dependent inheritance links.
+
 The core limitation of global DNA testing platforms like 23andMe and AncestryDNA for South Asian users is that they rely on limited reference panels (such as the 1000 Genomes Gujarati-diaspora dataset) and broad categories like "Southern India" or "Broadly South Asian".
 
 By building Genetix to ingest raw data files (.vcf or .txt SNP arrays) and process them against specialized local reference frameworks, you directly address this gap.
@@ -158,4 +217,16 @@ This is an open-source project aimed at making complex genetics accessible. Whet
 
 <div align="center"> 
 <img width="200" height="200" alt="GHBanner" src="./genetic.gif" />
-<p><strong>An Open Source Project - Feel Free to Contribute!</strong></p> <p>Made with ❤️ by Mohan Yadav</p> <p> <a href="https://github.com/mohan-i/genetix/issues">Report Bug</a> · <a href="https://github.com/mohan-i/genetix/issues">Request Feature</a> </p> </div>
+<p><strong>An Open Source Project - Feel Free to Contribute!</strong></p> <p>Made with ❤️ by Mohan Yadav</p> <p> <a href="https://github.com/mohan-i/genetix/issues">Report Bug</a> · <a href="https://github.com/mohan-i/genetix/issues">Request Feature</a> </p>
+ </div>
+
+
+> **Non-Commercial Open Use:**  Unless explicitly authorized under separate commercial terms, deployment of the public code repository must not be used to charge patients for unauthorized clinical diagnostic services.
+
+---
+
+**Authors:** Mr. Mohan Yadav
+
+*Mumbai, Maharashtra, India*
+
+**Corresponding Emails:** Mohanshyadav@gmail.com 
