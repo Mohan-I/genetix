@@ -69,7 +69,7 @@ export const Footer: React.FC<FooterProps> = ({
       title: 'Legal',
       links: [
         { label: 'Privacy Policy', href: '#' },
-        { label: 'Terms of Service', href: '#' },
+        { label: 'Terms of Service', href: '/terms' },
         { label: 'Ethics Statement', href: '#' },
         { label: 'HIPAA Compliance', href: '#' },
       ],
@@ -90,7 +90,7 @@ export const Footer: React.FC<FooterProps> = ({
     },
     {
       icon: <Mail className="w-3 h-3" />,
-      href: 'mailto:support@genetix.ai',
+      href: 'mailto:mohanshyadav@gmail.com',
       label: 'Email',
     },
   ];
