@@ -1,5 +1,5 @@
 // src/components/PGTSimulator.tsx
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import {
   Dna,
   AlertCircle,
@@ -16,8 +16,20 @@ import {
   Shield,
   Zap,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  FileUp,
+  Loader2,
+  Database,
+  HardDrive,
+  Cpu,
+  FileText,
+  AlertTriangle,
+  X,
+  Download,
+  Printer,
+  Share2
 } from 'lucide-react';
+import { VCFParser } from './VCFParser';
 
 // ============================================================================
 // 1. TYPES
@@ -25,26 +37,11 @@ import {
 
 interface PGTResults {
   embryoCount: number;
-  unaffected: {
-    count: number;
-    percentage: number;
-  };
-  carriers: {
-    count: number;
-    percentage: number;
-  };
-  affected: {
-    count: number;
-    percentage: number;
-  };
-  aneuploid: {
-    count: number;
-    percentage: number;
-  };
-  mosaic: {
-    count: number;
-    percentage: number;
-  };
+  unaffected: { count: number; percentage: number; };
+  carriers: { count: number; percentage: number; };
+  affected: { count: number; percentage: number; };
+  aneuploid: { count: number; percentage: number; };
+  mosaic: { count: number; percentage: number; };
   recommendations: string[];
   riskSummary: string;
 }
@@ -57,17 +54,22 @@ interface PGTSimulatorProps {
   onResultsGenerated?: (results: PGTResults) => void;
 }
 
+interface FileProcessingProgress {
+  fileName: string;
+  processedLines: number;
+  totalLines: number;
+  percentage: number;
+  variantsFound: number;
+  speed: number;
+  estimatedTimeRemaining: number;
+}
+
 // ============================================================================
 // 2. PGT ENGINE
 // ============================================================================
 
 class PGTEngine {
-  /**
-   * Calculate aneuploidy risk based on maternal age
-   * Based on clinical population data
-   */
   static calculateAneuploidyRisk(age: number): number {
-    // Clinical data: aneuploidy increases with maternal age
     const baseRisk = 0.02;
     if (age < 30) return baseRisk + 0.01;
     if (age < 35) return baseRisk + 0.03;
@@ -79,11 +81,7 @@ class PGTEngine {
     return baseRisk + 0.60;
   }
 
-  /**
-   * Calculate expected embryo yield
-   */
   static calculateEmbryoYield(age: number): number {
-    // Expected number of embryos based on age
     if (age < 30) return 12;
     if (age < 35) return 10;
     if (age < 38) return 8;
@@ -93,9 +91,6 @@ class PGTEngine {
     return 2;
   }
 
-  /**
-   * Calculate PGT-M outcomes for monogenic disorders
-   */
   static calculatePGTM(
     isCarrierConcordant: boolean,
     embryoCount: number,
@@ -106,7 +101,6 @@ class PGTEngine {
     affected: number;
   } {
     if (!isCarrierConcordant) {
-      // Population risk (1-2%)
       const affectedRate = 0.01;
       return {
         unaffected: Math.round(embryoCount * (1 - affectedRate)),
@@ -115,7 +109,6 @@ class PGTEngine {
       };
     }
 
-    // Both parents are carriers - Mendelian ratio
     const unaffected = Math.round(embryoCount * 0.25);
     const carriers = Math.round(embryoCount * 0.50);
     const affected = Math.round(embryoCount * 0.25);
@@ -123,9 +116,6 @@ class PGTEngine {
     return { unaffected, carriers, affected };
   }
 
-  /**
-   * Calculate PGT-A outcomes
-   */
   static calculatePGTA(
     embryoCount: number,
     maternalAge: number
@@ -144,9 +134,6 @@ class PGTEngine {
     };
   }
 
-  /**
-   * Generate comprehensive PGT results
-   */
   static generateResults(
     maternalAge: number,
     paternalAge: number,
@@ -155,16 +142,10 @@ class PGTEngine {
   ): PGTResults {
     const embryoCount = this.calculateEmbryoYield(maternalAge);
     
-    // PGT-M results
     const pgtm = this.calculatePGTM(isCarrierConcordant, embryoCount, maternalAge);
-    
-    // PGT-A results
     const pgta = this.calculatePGTA(embryoCount, maternalAge);
-    
-    // Calculate percentages
     const total = embryoCount;
     
-    // Build recommendations
     const recommendations: string[] = [];
     
     if (isCarrierConcordant) {
@@ -189,13 +170,11 @@ class PGTEngine {
       );
     }
     
-    // Add standard recommendations
     recommendations.push(
       '🔬 Orthogonal CLIA/CAP-accredited sequencing confirmation recommended',
       '🧬 Genetic counselling advised to review reproductive options'
     );
     
-    // Calculate risk summary
     const affectedRate = (pgtm.affected / total) * 100;
     const aneuploidRate = (pgta.aneuploid / total) * 100;
     
@@ -241,7 +220,7 @@ class PGTEngine {
 }
 
 // ============================================================================
-// 3. REACT COMPONENT
+// 3. PGT SIMULATOR COMPONENT
 // ============================================================================
 
 export const PGTSimulator: React.FC<PGTSimulatorProps> = ({
@@ -255,11 +234,12 @@ export const PGTSimulator: React.FC<PGTSimulatorProps> = ({
   const [paternalAge, setPaternalAge] = useState(initialPaternalAge);
   const [selectedRecessive, setSelectedRecessive] = useState(recessiveGene);
   const [showAllResults, setShowAllResults] = useState(false);
-  
-  // Simulate carrier concordance toggle
   const [isCarrier, setIsCarrier] = useState(isCarrierConcordant);
+  const [importedVariants, setImportedVariants] = useState<any[]>([]);
+  const [showFileProcessor, setShowFileProcessor] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [isProcessingVCF, setIsProcessingVCF] = useState(false);
   
-  // Known recessive conditions
   const recessiveConditions = [
     { gene: 'CFTR', disease: 'Cystic Fibrosis', prevalence: 0.04 },
     { gene: 'HBB', disease: 'Sickle Cell Anemia', prevalence: 0.02 },
@@ -270,24 +250,82 @@ export const PGTSimulator: React.FC<PGTSimulatorProps> = ({
     { gene: 'BRCA2', disease: 'Breast Cancer', prevalence: 0.018 }
   ];
 
-  // Calculate results when inputs change
+  // FIXED: Handle undefined disease property
   const results = useMemo(() => {
+    // Check if imported variants contain relevant genes
+    const hasRelevantVariant = importedVariants.some(v => {
+      const disease = v.disease || v.condition || '';
+      return v.gene === selectedRecessive || 
+             disease.includes(recessiveConditions.find(c => c.gene === selectedRecessive)?.disease || '');
+    });
+    
+    const actualCarrierStatus = isCarrier || hasRelevantVariant;
+    
     return PGTEngine.generateResults(
       maternalAge,
       paternalAge,
-      isCarrier,
+      actualCarrierStatus,
       selectedRecessive
     );
-  }, [maternalAge, paternalAge, isCarrier, selectedRecessive]);
+  }, [maternalAge, paternalAge, isCarrier, selectedRecessive, importedVariants]);
 
-  // Notify parent when results change
-  React.useEffect(() => {
+  useEffect(() => {
     if (onResultsGenerated) {
       onResultsGenerated(results);
     }
   }, [results, onResultsGenerated]);
 
-  // Get color for risk level
+  const handleVariantsProcessed = (variants: any[]) => {
+    setImportedVariants(variants);
+    // Check if any variants match the selected recessive gene
+    const hasMatch = variants.some(v => {
+      const disease = v.disease || v.condition || '';
+      return v.gene === selectedRecessive || 
+             disease.includes(recessiveConditions.find(c => c.gene === selectedRecessive)?.disease || '');
+    });
+    if (hasMatch) {
+      setIsCarrier(true);
+    }
+  };
+
+  const generateReport = () => {
+    setShowReportModal(true);
+  };
+
+  const downloadReport = () => {
+    const reportData = {
+      reportType: 'PGT Assessment',
+      generated: new Date().toISOString(),
+      couple: {
+        maternalAge,
+        paternalAge,
+        isCarrierConcordant: isCarrier,
+        recessiveGene: selectedRecessive
+      },
+      results,
+      importedVariants: importedVariants.map(v => ({
+        gene: v.gene || 'Unknown',
+        disease: v.disease || v.condition || 'Unknown',
+        zygosity: v.zygosity || 'Unknown',
+        isPathogenic: v.isPathogenic || false
+      })),
+      clinicalRecommendations: results.recommendations
+    };
+
+    const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pgt_report_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setShowReportModal(false);
+  };
+
+  const printReport = () => {
+    window.print();
+  };
+
   const getRiskColor = (percentage: number, high: number = 30, medium: number = 15) => {
     if (percentage > high) return 'text-red-400';
     if (percentage > medium) return 'text-yellow-400';
@@ -300,10 +338,185 @@ export const PGTSimulator: React.FC<PGTSimulatorProps> = ({
     return 'bg-emerald-500/20 border-emerald-500/30';
   };
 
+  // Report Modal
+  const ReportModal: React.FC = () => {
+    if (!showReportModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+        <div className="bg-[#0a0a0c] border border-white/10 p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative z-[10000]">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-sm font-mono text-white/80 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-emerald-500" />
+              PGT Assessment Report
+            </h3>
+            <button
+              onClick={() => setShowReportModal(false)}
+              className="text-white/40 hover:text-white/80 transition-colors p-1"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="space-y-6">
+            {/* Header */}
+            <div className="border-b border-white/10 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-500/10 rounded flex items-center justify-center">
+                  <Dna className="w-5 h-5 text-emerald-500" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-light text-white/90">GENETIX PGT Report</h2>
+                  <p className="text-[10px] text-white/40 font-mono">Preimplantation Genetic Testing Assessment</p>
+                </div>
+              </div>
+              <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2 text-[10px] text-white/40 font-mono">
+                <div>Generated: {new Date().toLocaleString()}</div>
+                <div>Maternal Age: {maternalAge}</div>
+                <div>Paternal Age: {paternalAge}</div>
+                <div>Gene: {selectedRecessive}</div>
+              </div>
+            </div>
+
+            {/* Carrier Status */}
+            <div className={`p-4 rounded border ${
+              isCarrier ? 'bg-yellow-500/10 border-yellow-500/30' : 'bg-emerald-500/10 border-emerald-500/30'
+            }`}>
+              <div className="flex items-center gap-3">
+                {isCarrier ? (
+                  <AlertCircle className="w-5 h-5 text-yellow-400" />
+                ) : (
+                  <CheckCircle className="w-5 h-5 text-emerald-400" />
+                )}
+                <div>
+                  <div className="text-sm font-medium text-white/90">
+                    {isCarrier ? '⚠️ Carrier Concordance Detected' : '✅ No Carrier Concordance'}
+                  </div>
+                  <div className="text-[10px] text-white/40 font-mono">
+                    {isCarrier 
+                      ? `Both parents are carriers for ${selectedRecessive} - 25% affected-embryo risk`
+                      : 'Population-level risk only for recessive conditions'}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Embryo Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="bg-white/5 p-3 rounded border border-white/5 text-center">
+                <div className="text-[8px] text-white/30 uppercase font-mono">Embryos</div>
+                <div className="text-2xl font-light text-white">{results.embryoCount}</div>
+              </div>
+              <div className="bg-emerald-500/5 p-3 rounded border border-emerald-500/20 text-center">
+                <div className="text-[8px] text-white/30 uppercase font-mono">Unaffected</div>
+                <div className="text-2xl font-light text-emerald-400">{results.unaffected.count}</div>
+                <div className="text-[8px] text-emerald-400/60">{results.unaffected.percentage.toFixed(0)}%</div>
+              </div>
+              <div className="bg-yellow-500/5 p-3 rounded border border-yellow-500/20 text-center">
+                <div className="text-[8px] text-white/30 uppercase font-mono">Carriers</div>
+                <div className="text-2xl font-light text-yellow-400">{results.carriers.count}</div>
+                <div className="text-[8px] text-yellow-400/60">{results.carriers.percentage.toFixed(0)}%</div>
+              </div>
+              <div className={`p-3 rounded border text-center ${
+                results.affected.count > 1 ? 'bg-red-500/5 border-red-500/20' : 'bg-emerald-500/5 border-emerald-500/20'
+              }`}>
+                <div className="text-[8px] text-white/30 uppercase font-mono">Affected</div>
+                <div className={`text-2xl font-light ${
+                  results.affected.count > 1 ? 'text-red-400' : 'text-emerald-400'
+                }`}>
+                  {results.affected.count}
+                </div>
+                <div className={`text-[8px] ${
+                  results.affected.count > 1 ? 'text-red-400/60' : 'text-emerald-400/60'
+                }`}>
+                  {results.affected.percentage.toFixed(0)}%
+                </div>
+              </div>
+            </div>
+
+            {/* Recommendations */}
+            <div>
+              <div className="text-[10px] text-white/40 uppercase font-mono tracking-wider mb-2">
+                Clinical Recommendations
+              </div>
+              <ul className="space-y-1 bg-white/5 p-3 rounded border border-white/5">
+                {results.recommendations.map((rec, idx) => (
+                  <li key={idx} className="text-[10px] text-white/60 font-mono flex items-start gap-2">
+                    <span className="text-emerald-500 mt-0.5">▸</span>
+                    {rec}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Imported Variants Summary */}
+            {importedVariants.length > 0 && (
+              <div>
+                <div className="text-[10px] text-white/40 uppercase font-mono tracking-wider mb-2">
+                  Imported Variants ({importedVariants.length})
+                </div>
+                <div className="max-h-40 overflow-y-auto space-y-1 bg-white/5 p-2 rounded border border-white/5">
+                  {importedVariants.slice(0, 20).map((v, idx) => (
+                    <div key={idx} className="flex items-center justify-between text-[9px] font-mono">
+                      <span className="text-white/60">{v.gene || 'Unknown'}</span>
+                      <span className="text-white/40">{v.disease || v.condition || '—'}</span>
+                      <span className={`text-[7px] px-1.5 py-0.5 rounded ${
+                        v.isPathogenic ? 'bg-red-500/20 text-red-400' : 'bg-white/10 text-white/30'
+                      }`}>
+                        {v.zygosity || 'Unknown'}
+                      </span>
+                    </div>
+                  ))}
+                  {importedVariants.length > 20 && (
+                    <div className="text-[8px] text-white/20 font-mono text-center">
+                      +{importedVariants.length - 20} more variants
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Disclaimer */}
+            <div className="p-3 bg-red-500/5 border border-red-500/20 rounded">
+              <p className="text-[8px] text-white/30 font-mono leading-relaxed">
+                ⚠️ This report is generated for educational purposes only. Genetic outcomes are probabilistic and actual results may vary. 
+                Not intended for clinical decision-making. Always consult with qualified healthcare providers for medical advice.
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 pt-4 border-t border-white/10">
+              <button
+                onClick={downloadReport}
+                className="flex-1 py-2 bg-emerald-500 hover:bg-emerald-400 text-[#0a0a0c] text-xs font-mono font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+              >
+                <Download className="w-3 h-3" />
+                Download Report
+              </button>
+              <button
+                onClick={printReport}
+                className="flex-1 py-2 bg-white/5 hover:bg-white/10 text-white/60 text-xs font-mono transition-all flex items-center justify-center gap-2"
+              >
+                <Printer className="w-3 h-3" />
+                Print
+              </button>
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white/40 text-xs font-mono transition-all"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-[#0a0a0c] border border-white/10 rounded-lg overflow-hidden">
       {/* Header */}
-      <div className="p-4 border-b border-white/10 flex items-center justify-between">
+      <div className="p-4 border-b border-white/10 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-emerald-500/10 rounded flex items-center justify-center">
             <Dna className="w-4 h-4 text-emerald-500" />
@@ -313,15 +526,62 @@ export const PGTSimulator: React.FC<PGTSimulatorProps> = ({
             <p className="text-[10px] text-white/40 font-mono">Preimplantation Genetic Testing</p>
           </div>
         </div>
-        <span className="text-[8px] text-emerald-500/60 bg-emerald-500/10 px-2 py-0.5 rounded font-mono">
-          v2.0
-        </span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowFileProcessor(!showFileProcessor)}
+            className="text-[8px] text-purple-400 hover:text-purple-300 font-mono transition-all flex items-center gap-1 px-2 py-1 bg-purple-500/10 border border-purple-500/30 rounded"
+          >
+            <HardDrive className="w-3 h-3" />
+            {showFileProcessor ? 'Hide Importer' : 'Import Data'}
+          </button>
+          <button
+            onClick={generateReport}
+            className="text-[8px] text-emerald-400 hover:text-emerald-300 font-mono transition-all flex items-center gap-1 px-2 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded"
+          >
+            <FileText className="w-3 h-3" />
+            Generate Report
+          </button>
+          <span className="text-[8px] text-emerald-500/60 bg-emerald-500/10 px-2 py-0.5 rounded font-mono">
+            v2.0
+          </span>
+        </div>
       </div>
 
       <div className="p-4 space-y-4">
+        {/* File Processor */}
+        {showFileProcessor && (
+          <VCFParser
+            onDataParsed={(variants, stats) => {
+              console.log('📊 VCF Parsed:', { variants: variants.length, stats });
+              const clinicalVariants = variants.filter(v => v.isClinicallyRelevant);
+              handleVariantsProcessed(clinicalVariants);
+              setIsProcessingVCF(false);
+            }}
+            onProcessingStart={() => {
+              console.log('⏳ Processing VCF...');
+              setIsProcessingVCF(true);
+            }}
+            onProcessingEnd={() => {
+              console.log('✅ VCF Processing complete');
+              setIsProcessingVCF(false);
+            }}
+          />
+        )}
+
+        {/* Imported Variants Summary */}
+        {importedVariants.length > 0 && (
+          <div className="p-2 bg-purple-500/5 border border-purple-500/20 rounded flex items-center justify-between">
+            <span className="text-[10px] text-purple-400 font-mono">
+              {importedVariants.length.toLocaleString()} clinically relevant variants imported
+            </span>
+            <span className="text-[8px] text-purple-400/60 font-mono">
+              {importedVariants.filter(v => v.isPathogenic).length} pathogenic
+            </span>
+          </div>
+        )}
+
         {/* Controls */}
         <div className="grid md:grid-cols-2 gap-4">
-          {/* Maternal Age Slider */}
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <label className="text-[10px] text-white/40 uppercase font-mono tracking-wider">
@@ -347,7 +607,6 @@ export const PGTSimulator: React.FC<PGTSimulatorProps> = ({
             </div>
           </div>
 
-          {/* Paternal Age Slider */}
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <label className="text-[10px] text-white/40 uppercase font-mono tracking-wider">
@@ -458,7 +717,6 @@ export const PGTSimulator: React.FC<PGTSimulatorProps> = ({
 
         {showAllResults && (
           <div className="space-y-4 pt-2 border-t border-white/5">
-            {/* PGT-A Results */}
             <div>
               <div className="text-[10px] text-white/40 uppercase font-mono tracking-wider mb-2">
                 PGT-A (Aneuploidy Screening)
@@ -482,7 +740,6 @@ export const PGTSimulator: React.FC<PGTSimulatorProps> = ({
               </div>
             </div>
 
-            {/* Risk Summary */}
             <div className={`p-3 rounded border ${getRiskBgColor(results.affected.percentage)}`}>
               <div className="flex items-start gap-2">
                 {results.affected.percentage > 15 ? (
@@ -501,7 +758,6 @@ export const PGTSimulator: React.FC<PGTSimulatorProps> = ({
               </div>
             </div>
 
-            {/* Recommendations */}
             <div>
               <div className="text-[10px] text-white/40 uppercase font-mono tracking-wider mb-2">
                 Clinical Recommendations
@@ -518,13 +774,9 @@ export const PGTSimulator: React.FC<PGTSimulatorProps> = ({
           </div>
         )}
 
-        {/* Call to Action */}
         <div className="pt-2 border-t border-white/5 flex gap-3">
           <button
-            onClick={() => {
-              // Generate report action
-              alert('📊 PGT Report generated!');
-            }}
+            onClick={generateReport}
             className="flex-1 py-2 bg-emerald-500 hover:bg-emerald-400 text-[#0a0a0c] text-xs font-mono font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
           >
             <BarChart3 className="w-3 h-3" />
@@ -532,11 +784,11 @@ export const PGTSimulator: React.FC<PGTSimulatorProps> = ({
           </button>
           <button
             onClick={() => {
-              // Reset to defaults
               setMaternalAge(28);
               setPaternalAge(30);
               setIsCarrier(false);
               setSelectedRecessive('CFTR');
+              setImportedVariants([]);
             }}
             className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white/60 text-xs font-mono transition-all"
           >
@@ -544,6 +796,9 @@ export const PGTSimulator: React.FC<PGTSimulatorProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Report Modal */}
+      <ReportModal />
     </div>
   );
 };

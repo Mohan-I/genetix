@@ -83,3 +83,40 @@ rs334	11	5227002	TA
 rs80357065	13	32316461	AA
 
 ```
+---
+
+### 500 Genomic Data
+
+Here is your file: 
+This file provides a structured, synthetic multi-sample VCF containing 500 individual samples mapped against genetic variants strongly tied to Type 2/monogenic diabetes risks and hereditary cancer syndromes. [1] 
+## Cohort Overview & Risk Breakdown
+
+| Genetic Risk Category | Targeted Variant | Gene | Clinical Context | Carrier Frequency in File |
+|---|---|---|---|---|
+| Hereditary Cancer Risk | rs80357372, rs80358974 | BRCA1, BRCA2 | Increased risk for breast and ovarian cancers. | Rare (~1–3% of cohort) |
+| Lynch Syndrome | rs63751298, rs267608055 | MSH2, MLH1 | Elevated risk for colorectal and endometrial cancers. | Rare (~1–3% of cohort) |
+| Monogenic Diabetes | rs1799884 | GCK | Maturity-Onset Diabetes of the Young (MODY). | Rare (~2% of cohort) |
+| Polygenic Diabetes Risk | rs7903146, rs13266634, rs12255372 | TCF7L2, SLC30A8 | Common metabolic risk alleles for Type 2 Diabetes. | Common (~40–50% of cohort) |
+
+## Structure of the Generated File
+
+* Metadata Block: Standard VCF headers explicitly detailing the reference genome (GRCh38) and custom INFO fields defining associated genes and medical conditions.
+* Genotype Mapping:
+* 0/0: Normal homozygous (non-carrier/wild-type base).
+   * 0/1: Heterozygous variant carrier (one abnormal risk allele).
+   * 1/1: Homozygous alternate carrier (two copies of the risk allele). [2, 3] 
+
+Disclaimer: This is a synthetic dataset generated for engineering pipeline testing, tool benchmarking, and validation purposes only. It does not contain real human medical or patient genotype records.
+If you want to manipulate this dataset, I can write a Python script using pysam or pandas to parse out just the cancer carriers or calculate a diabetes genetic risk score (GRS). Which option would help you most?
+
+[1] [https://www.ncbi.nlm.nih.gov](https://www.ncbi.nlm.nih.gov/books/NBK597726/)
+[2] [https://obgyn.onlinelibrary.wiley.com](https://obgyn.onlinelibrary.wiley.com/doi/10.1111/1471-0528.12937)
+[3] [https://pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC3840048/)
+
+
+---
+
+### Other Websites To Get .VCF data
+
+https://gnomad.broadinstitute.org/downloads
+https://bochet.gcc.biostat.washington.edu/beagle/1000_Genomes_phase3_v5a/
